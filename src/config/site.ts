@@ -1,0 +1,133 @@
+/**
+ * Central site configuration.
+ *
+ * Every business-specific value is sourced from environment variables with
+ * safe fallbacks. Nothing here fabricates a phone number, address, price or
+ * location. When a value is empty, the UI hides the affected element or shows
+ * a neutral "contact us" message instead of a visible placeholder label.
+ *
+ * TODO (pre-launch): populate the values below via environment variables.
+ * See .env.example for the full list.
+ */
+
+const rawServiceAreas = process.env.NEXT_PUBLIC_SERVICE_AREAS ?? "";
+
+export interface SiteAddress {
+  streetAddress?: string;
+  locality?: string;
+  region?: string;
+  postalCode?: string;
+  country?: string;
+}
+
+// TODO: set a real postal address before adding it to production JSON-LD.
+const address: SiteAddress | null = null;
+
+export const siteConfig = {
+  name: "Dear Ones",
+  legalName: process.env.NEXT_PUBLIC_LEGAL_NAME ?? "", // TODO: registered business name
+  tagline: "Your Love. Our Hands.",
+  shortDescription:
+    "Trusted local support for parents living at home — with regular visits, everyday assistance, care coordination and clear family updates.",
+
+  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(
+    /\/$/,
+    ""
+  ),
+
+  // Contact channels (public). Empty string => hidden in the UI.
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
+  phone: process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "",
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "",
+
+  // Where enquiries are delivered (server-side only usage).
+  formRecipient: process.env.CONTACT_TO_EMAIL ?? "",
+
+  // Locations. Comma-separated env value -> array. Empty => availability copy.
+  serviceAreas: rawServiceAreas
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
+
+  // TODO: confirm the primary marketing service area for SEO templates.
+  primaryServiceArea: process.env.NEXT_PUBLIC_PRIMARY_AREA ?? "",
+
+  country: process.env.NEXT_PUBLIC_COUNTRY ?? "",
+  address,
+
+  // TODO: confirm real operating hours before publishing.
+  operatingHours: process.env.NEXT_PUBLIC_OPERATING_HOURS ?? "",
+
+  availableLanguages: ["English"],
+
+  socialLinks: {
+    // TODO: add real profile URLs. Empty entries are ignored everywhere.
+    instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "",
+    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL ?? "",
+    linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL ?? "",
+  },
+
+  legalLinks: {
+    privacy: "/privacy", // TODO: publish a real privacy policy page
+    terms: "/terms", // TODO: publish real terms of service
+  },
+
+  googleSiteVerification:
+    process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? "",
+
+  analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "",
+
+  planLabels: {
+    essential: "Dear Care Essential",
+    plus: "Dear Care Plus",
+    elite: "Dear Care Elite",
+  },
+} as const;
+
+export type SiteConfig = typeof siteConfig;
+
+/* ---------- Derived helpers ---------- */
+
+/** Digits-only phone/WhatsApp value suitable for tel: and wa.me links. */
+export function toDigits(value: string): string {
+  return value.replace(/[^\d+]/g, "").replace(/^\+/, "");
+}
+
+export function getTelHref(): string | null {
+  return siteConfig.phone ? `tel:${siteConfig.phone.replace(/\s+/g, "")}` : null;
+}
+
+export function getWhatsappHref(prefilled?: string): string | null {
+  if (!siteConfig.whatsapp) return null;
+  const number = toDigits(siteConfig.whatsapp);
+  if (!number) return null;
+  const text = prefilled ? `?text=${encodeURIComponent(prefilled)}` : "";
+  return `https://wa.me/${number}${text}`;
+}
+
+export function getMailtoHref(subject?: string): string | null {
+  if (!siteConfig.email) return null;
+  const s = subject ? `?subject=${encodeURIComponent(subject)}` : "";
+  return `mailto:${siteConfig.email}${s}`;
+}
+
+export function hasAnyContactChannel(): boolean {
+  return Boolean(siteConfig.phone || siteConfig.whatsapp || siteConfig.email);
+}
+
+/** Human-readable service-area string, or a neutral fallback. */
+export function serviceAreaLabel(): string {
+  if (siteConfig.serviceAreas.length === 0) {
+    return "Contact us to confirm availability in your parent’s location";
+  }
+  return siteConfig.serviceAreas.join(", ");
+}
+
+/** Service area used in SEO titles; falls back to a generic phrase. */
+export function seoServiceArea(): string {
+  return (
+    siteConfig.primaryServiceArea ||
+    siteConfig.serviceAreas[0] ||
+    "India & for NRI Families"
+  );
+}

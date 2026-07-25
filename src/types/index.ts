@@ -1,0 +1,72 @@
+import type { LucideIcon } from "lucide-react";
+
+export interface NavLink {
+  label: string;
+  href: string;
+}
+
+export interface SupportStep {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+export interface ServiceItem {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  /** Optional clarifying note rendered in a muted style. */
+  note?: string;
+  /** Featured items span two columns on desktop. */
+  featured?: boolean;
+}
+
+export interface PlanInclusionGroup {
+  label?: string;
+  items: string[];
+}
+
+export interface PlanTier {
+  id: string;
+  name: string;
+  tagline: string;
+  summary: string;
+  /** Short highlights always visible on the card. */
+  highlights: string[];
+  /** Full inclusions revealed in the expandable area. */
+  detailGroups: PlanInclusionGroup[];
+  /** Text shown before the "plus" detail groups, e.g. "Everything in Essential, plus". */
+  inheritsNote?: string;
+  featured?: boolean;
+  badge?: string;
+}
+
+export interface OnDemandCategory {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+export interface HowItWorksStep {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+export interface TrustPoint {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+  /** Draft answers that need human/legal confirmation before launch. */
+  needsConfirmation?: boolean;
+}
+
+export interface SelectOption {
+  value: string;
+  label: string;
+}
