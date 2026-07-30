@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { trackEvent, type AnalyticsEvent } from "@/lib/analytics";
 
 type Variant = "primary" | "secondary" | "ghost" | "inverse";
-type Size = "sm" | "md" | "lg";
+type Size = "sm" | "compact" | "md" | "lg";
 
 const base =
   "group relative inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-terracotta disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.98]";
@@ -23,6 +23,8 @@ const variants: Record<Variant, string> = {
 
 const sizes: Record<Size, string> = {
   sm: "h-10 px-5 text-sm",
+  // Full height, tight horizontal padding — for rows of two CTAs side by side.
+  compact: "h-11 px-4 text-sm",
   md: "h-12 px-6 text-[0.95rem]",
   lg: "h-[3.35rem] px-8 text-base",
 };

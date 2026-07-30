@@ -68,7 +68,7 @@ export const hero = {
   highlights: [
     { label: "Personalized care & regular visits", icon: HeartHandshake },
     { label: "Safety, wellbeing & health monitoring", icon: ShieldCheck },
-    { label: "Help with daily needs & errands", icon: CalendarCheck },
+    { label: "Everyday assistance & support", icon: CalendarCheck },
     { label: "Family updates & peace of mind", icon: Users },
   ] satisfies HeroHighlight[],
 } as const;

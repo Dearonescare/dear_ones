@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Menu, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { siteConfig } from "@/config/site";
 import { navLinks } from "@/content/landing-page";
-import { BrandMark } from "@/components/ui/BrandMark";
 import { Button } from "@/components/ui/Button";
 import { MobileNavigation } from "@/components/layout/MobileNavigation";
 
@@ -38,7 +39,15 @@ export function Header() {
             className="rounded-lg py-1"
             aria-label={`${"Dear Ones"} — back to top`}
           >
-            <BrandMark showTagline />
+            <Image
+              src="/images/brand-lockup.png"
+              alt={`${siteConfig.name} — ${siteConfig.tagline}`}
+              width={600}
+              height={165}
+              priority
+              sizes="(min-width: 640px) 200px, 168px"
+              className="h-[46px] w-auto sm:h-[54px]"
+            />
           </a>
 
           <ul className="hidden items-center gap-8 lg:flex">
@@ -55,16 +64,19 @@ export function Header() {
           </ul>
 
           <div className="flex items-center gap-2">
-            <Button
-              href="#contact"
-              size="sm"
-              className="hidden sm:inline-flex"
-            >
-              <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15">
-                <Phone aria-hidden="true" className="h-3.5 w-3.5" />
-              </span>
-              Speak With Us
-            </Button>
+            {/* Only from lg — below that the sticky MobileContactBar already
+                carries this action, and two of them read as a duplicate.
+                The wrapper does the hiding: Button's base class sets
+                `inline-flex`, which would otherwise beat a `hidden` passed
+                through className (cn is a plain join, not tailwind-merge). */}
+            <div className="hidden lg:block">
+              <Button href="#contact" size="sm">
+                <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15">
+                  <Phone aria-hidden="true" className="h-3.5 w-3.5" />
+                </span>
+                Speak With Us
+              </Button>
+            </div>
             <button
               type="button"
               onClick={() => setMenuOpen(true)}

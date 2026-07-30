@@ -27,42 +27,35 @@ export function HeroSection() {
         <div className="absolute -left-32 top-40 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,_rgba(250,240,226,0.9),_transparent_60%)]" />
       </div>
 
-      {/* Banner photo — full-bleed behind the copy, masked so its inner edge
-          melts into the background instead of ending on a hard line.
-          Plain <picture> so only the matching crop is downloaded. */}
+      {/* Hero artwork — full-bleed behind the copy. The two masters are
+          composed for their own orientation (engraved village on one side,
+          photo on the other), so they are used whole; a plain <picture>
+          keeps the browser from fetching the one it doesn't need. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 top-[72px] -z-20 animate-hero-image [mask-image:linear-gradient(to_bottom,transparent_12%,#000_68%)] md:left-[36%] md:top-0 md:[mask-image:linear-gradient(to_right,transparent_0%,#000_30%)]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 top-[72px] -z-20 animate-hero-image"
       >
         <picture>
           <source
             media="(min-width: 768px)"
             type="image/avif"
-            srcSet="/images/hero-wide-800.avif 800w, /images/hero-wide-1103.avif 1103w"
-            sizes="64vw"
+            srcSet="/images/hero-desktop.avif"
           />
           <source
             media="(min-width: 768px)"
             type="image/webp"
-            srcSet="/images/hero-wide-800.webp 800w, /images/hero-wide-1103.webp 1103w"
-            sizes="64vw"
+            srcSet="/images/hero-desktop.webp"
           />
-          <source
-            type="image/avif"
-            srcSet="/images/hero-portrait-500.avif 500w, /images/hero-portrait-680.avif 680w"
-            sizes="100vw"
-          />
-          <source
-            type="image/webp"
-            srcSet="/images/hero-portrait-500.webp 500w, /images/hero-portrait-680.webp 680w"
-            sizes="100vw"
-          />
+          <source type="image/avif" srcSet="/images/hero-mobile.avif" />
           <img
-            src="/images/hero-portrait-680.webp"
+            src="/images/hero-mobile.webp"
             alt={PHOTO_ALT}
             fetchPriority="high"
             decoding="async"
-            className="h-full w-full object-cover object-[62%_top] md:object-[center_28%]"
+            /* Anchored to the top so her head is never cropped. The 65% only
+               bites at narrow md widths, where the frame is near-square and
+               crops horizontally too — wider viewports crop vertically only. */
+            className="h-full w-full object-cover object-[center_28%] md:object-[65%_top]"
           />
         </picture>
       </div>
@@ -73,29 +66,10 @@ export function HeroSection() {
         className={`pointer-events-none absolute inset-0 -z-10 ${SCRIM}`}
       />
 
-      {/* Engraved village motif — sits in the fade between copy and photo.
-          Kept as its own layer (rather than baked into the crop) so it can be
-          placed independently at each breakpoint. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -z-10 right-0 top-[14%] w-[56%] opacity-70 [mask-image:radial-gradient(ellipse_at_center,#000_42%,transparent_74%)] md:right-auto md:left-[45%] md:top-1/2 md:w-[27%] md:-translate-y-1/2 md:opacity-85"
-      >
-        <picture>
-          <source type="image/avif" srcSet="/images/hero-village.avif" />
-          <img
-            src="/images/hero-village.webp"
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="h-auto w-full"
-          />
-        </picture>
-      </div>
-
       <Container>
-        <div className="flex max-w-xl flex-col lg:max-w-[38rem]">
+        <div className="flex max-w-xl flex-col lg:max-w-[31rem]">
           {/* Eyebrow pill */}
-          <p className="eyebrow eyebrow-lg inline-flex w-fit items-center gap-2 rounded-full border border-gold/35 bg-surface/70 px-4 py-2 shadow-[0_2px_10px_rgba(76,37,13,0.05)] backdrop-blur-[2px] animate-fade-up">
+          <p className="eyebrow eyebrow-pill inline-flex w-fit items-center gap-2 rounded-full border border-gold/35 bg-surface/70 px-3.5 py-1.5 shadow-[0_2px_10px_rgba(76,37,13,0.05)] backdrop-blur-[2px] animate-fade-up">
             <ShieldCheck aria-hidden="true" className="h-[1.15em] w-[1.15em]" />
             {hero.eyebrow}
           </p>
@@ -115,7 +89,7 @@ export function HeroSection() {
           {/* Heart divider */}
           <div
             aria-hidden="true"
-            className="mt-5 flex max-w-md items-center gap-3 animate-fade-up"
+            className="mt-4 flex max-w-[21rem] items-center gap-3 animate-fade-up"
             style={{ animationDelay: "90ms" }}
           >
             <span className="h-px flex-1 bg-[linear-gradient(to_right,transparent,var(--gold))]" />
@@ -124,7 +98,7 @@ export function HeroSection() {
           </div>
 
           <p
-            className="mt-5 max-w-lg text-pretty text-[0.95rem] leading-relaxed text-muted animate-fade-up sm:text-base"
+            className="mt-4 max-w-[27.5rem] text-pretty text-[0.85rem] leading-relaxed text-muted animate-fade-up md:text-[0.8rem]"
             style={{ animationDelay: "120ms" }}
           >
             {hero.description}
@@ -133,7 +107,7 @@ export function HeroSection() {
           {/* Highlights — stacked list on phones, divided row from md up.
               Sits above the CTAs on mobile and below them on desktop. */}
           <ul
-            className="order-1 mt-7 divide-y divide-line/70 animate-fade-up md:order-2 md:mt-9 md:flex md:divide-x md:divide-y-0"
+            className="order-1 mt-7 divide-y divide-line/70 animate-fade-up md:order-2 md:mt-6 md:flex md:divide-x md:divide-y-0"
             style={{ animationDelay: "240ms" }}
           >
             {hero.highlights.map(({ label, icon: Icon }) => (
@@ -142,9 +116,12 @@ export function HeroSection() {
                 className="flex items-center gap-3 py-3 md:flex-1 md:flex-col md:gap-2 md:px-3 md:py-0 md:text-center"
               >
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-gold/30 bg-surface/70 md:h-auto md:w-auto md:border-0 md:bg-transparent">
-                  <Icon aria-hidden="true" className="h-5 w-5 text-gold-dark" />
+                  <Icon
+                    aria-hidden="true"
+                    className="h-5 w-5 text-gold-dark md:h-[1.15rem] md:w-[1.15rem]"
+                  />
                 </span>
-                <span className="text-sm leading-snug text-brown-soft md:text-[0.8rem]">
+                <span className="text-sm leading-snug text-brown-soft md:text-[0.68rem]">
                   {label}
                 </span>
               </li>
@@ -152,16 +129,27 @@ export function HeroSection() {
           </ul>
 
           <div
-            className="order-2 mt-7 flex flex-col gap-3 animate-fade-up sm:flex-row sm:items-center md:order-1 md:mt-8"
+            className="order-2 mt-7 flex flex-col gap-3 animate-fade-up sm:flex-row sm:items-center md:order-1 md:mt-7"
             style={{ animationDelay: "180ms" }}
           >
-            <Button href="#contact" size="lg" withArrow analyticsEvent="hero_cta_click">
-              <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15">
-                <Headset aria-hidden="true" className="h-4 w-4" />
+            <Button
+              href="#contact"
+              size="compact"
+              withArrow
+              analyticsEvent="hero_cta_click"
+              className="whitespace-nowrap"
+            >
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-white/15">
+                <Headset aria-hidden="true" className="h-3.5 w-3.5" />
               </span>
               {hero.primaryCta}
             </Button>
-            <Button href="#care-plans" size="lg" variant="secondary">
+            <Button
+              href="#care-plans"
+              size="compact"
+              variant="secondary"
+              className="whitespace-nowrap"
+            >
               <CalendarCheck aria-hidden="true" className="h-[1.15em] w-[1.15em] text-gold-dark" />
               {hero.secondaryCta}
             </Button>

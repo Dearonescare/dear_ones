@@ -153,99 +153,90 @@ async function fromPlaceholders() {
   console.log("Placeholders written to public/images/.");
 }
 
-/* ---------- Hero banners ---------- */
-// The two supplied banner artworks live in public/images/ as PNG masters.
-// They already carry the wordmark and tagline, so they are used as-is —
-// only re-encoded to AVIF/WebP at a few widths for the hero <picture>.
-const BANNERS = [
-  { master: "banner_lap.png", base: "banner-desktop", widths: [1920, 1280] },
-  { master: "banner_mobile.png", base: "banner-mobile", widths: [1024, 720] },
+/* ---------- Hero backgrounds ---------- */
+// Purpose-built, text-free artwork: engraved village on one side, the photo
+// on the other. Used whole — the hero copy overlays them — so these are only
+// re-encoded to AVIF/WebP at a couple of widths for the hero <picture>.
+// NOTE: the masters are only 1065px and 392px wide, so they are encoded at
+// native size — there is no second srcset width to offer, and upscaling here
+// would add bytes without adding detail. Higher-resolution exports (~2400px
+// desktop, ~1200px mobile) would sharpen these noticeably on HiDPI screens.
+const HERO_BACKGROUNDS = [
+  { master: "desktop_background.png", base: "hero-desktop" },
+  { master: "mobile_background.png", base: "hero-mobile" },
 ];
-
-// The hero copy is overlaid on the artwork, so the hero uses photo-only crops
-// taken from the desktop master — the wordmark and tagline baked into both
-// banners sit exactly where the headline goes. Pixel boxes on banner_lap.png
-// (1983x793); the wordmark ends at x~845, so every crop starts past it.
-const HERO_CROPS = [
-  // Wide framing for md+ — keeps the engraved village edge for the left fade.
-  {
-    base: "hero-wide",
-    crop: { left: 880, top: 0, width: 1103, height: 793 },
-    widths: [1103, 800],
-  },
-  // Tighter, taller framing for phones.
-  {
-    base: "hero-portrait",
-    crop: { left: 1110, top: 20, width: 680, height: 773 },
-    widths: [680, 500],
-  },
-];
-
-// Engraved village vignette used as a decorative layer in the hero. Taken
-// from banner_mobile.png (1024x1536), where it sits clear of every text
-// block — the desktop banner's copy of it runs under the wordmark.
-const VILLAGE_CROP = { left: 0, top: 806, width: 492, height: 400 };
 
 // Hands close-up used by the Distance and Family Updates sections, cropped
 // out of the desktop banner (fractions of its 1983x793 frame).
 const HANDS_CROP = { left: 0.56, top: 0.34, width: 0.34, height: 0.66 };
 
-async function processBanners() {
-  for (const { master, base, widths } of BANNERS) {
+/* ---------- Brand lockup ---------- */
+// navbar_logo.png is a sheet: the horizontal lockup on the left, a square
+// app-icon variant on the right. Only the lockup is needed, and it ships on
+// a flat cream plate — opaque, it would show as a patch against the
+// translucent scrolled header, so the plate is unmultiplied back out to alpha.
+const LOCKUP_CROP = { left: 4, top: 11, width: 600, height: 165 };
+const LOCKUP_PLATE = [250, 244, 237];
+
+async function unmultiplyPlate(src, crop, plate) {
+  const { data, info } = await sharp(src)
+    .extract(crop)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const out = Buffer.alloc(data.length);
+  for (let i = 0; i < data.length; i += 4) {
+    // Ink over a known flat plate: the channel that darkened most relative to
+    // the plate gives the coverage, and the colour divides back out of it.
+    let a = 0;
+    for (let c = 0; c < 3; c += 1) a = Math.max(a, 1 - data[i + c] / plate[c]);
+    a = Math.min(1, Math.max(0, a));
+    if (a < 0.004) continue; // stays fully transparent
+    for (let c = 0; c < 3; c += 1) {
+      const v = (data[i + c] - plate[c] * (1 - a)) / a;
+      out[i + c] = Math.min(255, Math.max(0, Math.round(v)));
+    }
+    out[i + 3] = Math.round(a * 255);
+  }
+
+  return sharp(out, {
+    raw: { width: info.width, height: info.height, channels: 4 },
+  });
+}
+
+async function processArtwork() {
+  for (const { master, base } of HERO_BACKGROUNDS) {
     const src = join(OUT, master);
     if (!existsSync(src)) {
-      console.warn(`Banner master missing: ${master} — skipped.`);
+      console.warn(`Hero master missing: ${master} — skipped.`);
       continue;
     }
-    for (const w of widths) {
-      await sharp(src)
-        .resize({ width: w, withoutEnlargement: true })
-        .webp({ quality: 82 })
-        .toFile(join(OUT, `${base}-${w}.webp`));
-      await sharp(src)
-        .resize({ width: w, withoutEnlargement: true })
-        .avif({ quality: 60 })
-        .toFile(join(OUT, `${base}-${w}.avif`));
-    }
-    console.log(`Encoded ${base} at ${widths.join(", ")}px (AVIF + WebP).`);
+    const { width, height } = await sharp(src).metadata();
+    await sharp(src).webp({ quality: 84 }).toFile(join(OUT, `${base}.webp`));
+    await sharp(src).avif({ quality: 62 }).toFile(join(OUT, `${base}.avif`));
+    console.log(`Encoded ${base} at ${width}x${height} (AVIF + WebP).`);
   }
 
-  const desktopMaster = join(OUT, "banner_lap.png");
-  if (existsSync(desktopMaster)) {
-    for (const { base, crop, widths } of HERO_CROPS) {
-      for (const w of widths) {
-        await sharp(desktopMaster)
-          .extract(crop)
-          .resize({ width: w, withoutEnlargement: true })
-          .webp({ quality: 84 })
-          .toFile(join(OUT, `${base}-${w}.webp`));
-        await sharp(desktopMaster)
-          .extract(crop)
-          .resize({ width: w, withoutEnlargement: true })
-          .avif({ quality: 62 })
-          .toFile(join(OUT, `${base}-${w}.avif`));
-      }
-      console.log(`Cropped ${base} at ${widths.join(", ")}px (AVIF + WebP).`);
-    }
+  const logoSheet = join(OUT, "navbar_logo.png");
+  if (existsSync(logoSheet)) {
+    const lockup = await unmultiplyPlate(logoSheet, LOCKUP_CROP, LOCKUP_PLATE);
+    await lockup
+      .clone()
+      .png({ compressionLevel: 9 })
+      .toFile(join(OUT, "brand-lockup.png"));
+    await lockup
+      .clone()
+      .webp({ quality: 92, alphaQuality: 100 })
+      .toFile(join(OUT, "brand-lockup.webp"));
+    console.log("Extracted brand-lockup with transparency (PNG + WebP).");
   }
 
-  const mobileMaster = join(OUT, "banner_mobile.png");
-  if (existsSync(mobileMaster)) {
-    await sharp(mobileMaster)
-      .extract(VILLAGE_CROP)
-      .webp({ quality: 84 })
-      .toFile(join(OUT, "hero-village.webp"));
-    await sharp(mobileMaster)
-      .extract(VILLAGE_CROP)
-      .avif({ quality: 62 })
-      .toFile(join(OUT, "hero-village.avif"));
-    console.log("Cropped hero-village from the mobile banner (AVIF + WebP).");
-  }
-
-  if (!source && existsSync(desktopMaster)) {
-    const meta = await sharp(desktopMaster).metadata();
+  const handsMaster = join(OUT, "banner_lap.png");
+  if (!source && existsSync(handsMaster)) {
+    const meta = await sharp(handsMaster).metadata();
     const dim = { width: meta.width ?? 1983, height: meta.height ?? 793 };
-    await sharp(desktopMaster)
+    await sharp(handsMaster)
       .extract(box(dim, HANDS_CROP))
       .resize({ width: 1000, withoutEnlargement: true })
       .webp({ quality: 84 })
@@ -257,7 +248,7 @@ async function processBanners() {
 async function main() {
   if (source) await fromSource();
   else await fromPlaceholders();
-  await processBanners();
+  await processArtwork();
 }
 
 main().catch((err) => {
