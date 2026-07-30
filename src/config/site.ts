@@ -30,7 +30,7 @@ export const siteConfig = {
   shortDescription:
     "Trusted local support for parents living at home — with regular visits, everyday assistance, care coordination and clear family updates.",
 
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(
+  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:4200").replace(
     /\/$/,
     ""
   ),

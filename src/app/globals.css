@@ -131,6 +131,20 @@
   color: var(--gold-dark);
 }
 
+/* Hero-scale variant. `.eyebrow` is unlayered, so Tailwind's text-* utilities
+   lose to it in the cascade — the size bump has to live here. */
+.eyebrow-lg {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+@media (min-width: 640px) {
+  .eyebrow-lg {
+    font-size: 1.125rem;
+  }
+}
+
 .text-balance {
   text-wrap: balance;
 }

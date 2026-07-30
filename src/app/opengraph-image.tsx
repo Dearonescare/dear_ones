@@ -53,7 +53,7 @@ export default function OpengraphImage() {
               maxWidth: 900,
             }}
           >
-            Trusted care for your parents. Peace of mind for you.
+            Trusted care and support for your parents. Peace of mind for you.
           </span>
           <span style={{ fontSize: 30, color: "#76665B", marginTop: 24 }}>
             NRI Parent Care &amp; Elder Support — visits, assistance, coordination

@@ -5,6 +5,11 @@ export interface NavLink {
   href: string;
 }
 
+export interface HeroHighlight {
+  label: string;
+  icon: LucideIcon;
+}
+
 export interface SupportStep {
   title: string;
   description: string;

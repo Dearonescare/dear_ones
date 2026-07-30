@@ -153,9 +153,111 @@ async function fromPlaceholders() {
   console.log("Placeholders written to public/images/.");
 }
 
+/* ---------- Hero banners ---------- */
+// The two supplied banner artworks live in public/images/ as PNG masters.
+// They already carry the wordmark and tagline, so they are used as-is —
+// only re-encoded to AVIF/WebP at a few widths for the hero <picture>.
+const BANNERS = [
+  { master: "banner_lap.png", base: "banner-desktop", widths: [1920, 1280] },
+  { master: "banner_mobile.png", base: "banner-mobile", widths: [1024, 720] },
+];
+
+// The hero copy is overlaid on the artwork, so the hero uses photo-only crops
+// taken from the desktop master — the wordmark and tagline baked into both
+// banners sit exactly where the headline goes. Pixel boxes on banner_lap.png
+// (1983x793); the wordmark ends at x~845, so every crop starts past it.
+const HERO_CROPS = [
+  // Wide framing for md+ — keeps the engraved village edge for the left fade.
+  {
+    base: "hero-wide",
+    crop: { left: 880, top: 0, width: 1103, height: 793 },
+    widths: [1103, 800],
+  },
+  // Tighter, taller framing for phones.
+  {
+    base: "hero-portrait",
+    crop: { left: 1110, top: 20, width: 680, height: 773 },
+    widths: [680, 500],
+  },
+];
+
+// Engraved village vignette used as a decorative layer in the hero. Taken
+// from banner_mobile.png (1024x1536), where it sits clear of every text
+// block — the desktop banner's copy of it runs under the wordmark.
+const VILLAGE_CROP = { left: 0, top: 806, width: 492, height: 400 };
+
+// Hands close-up used by the Distance and Family Updates sections, cropped
+// out of the desktop banner (fractions of its 1983x793 frame).
+const HANDS_CROP = { left: 0.56, top: 0.34, width: 0.34, height: 0.66 };
+
+async function processBanners() {
+  for (const { master, base, widths } of BANNERS) {
+    const src = join(OUT, master);
+    if (!existsSync(src)) {
+      console.warn(`Banner master missing: ${master} — skipped.`);
+      continue;
+    }
+    for (const w of widths) {
+      await sharp(src)
+        .resize({ width: w, withoutEnlargement: true })
+        .webp({ quality: 82 })
+        .toFile(join(OUT, `${base}-${w}.webp`));
+      await sharp(src)
+        .resize({ width: w, withoutEnlargement: true })
+        .avif({ quality: 60 })
+        .toFile(join(OUT, `${base}-${w}.avif`));
+    }
+    console.log(`Encoded ${base} at ${widths.join(", ")}px (AVIF + WebP).`);
+  }
+
+  const desktopMaster = join(OUT, "banner_lap.png");
+  if (existsSync(desktopMaster)) {
+    for (const { base, crop, widths } of HERO_CROPS) {
+      for (const w of widths) {
+        await sharp(desktopMaster)
+          .extract(crop)
+          .resize({ width: w, withoutEnlargement: true })
+          .webp({ quality: 84 })
+          .toFile(join(OUT, `${base}-${w}.webp`));
+        await sharp(desktopMaster)
+          .extract(crop)
+          .resize({ width: w, withoutEnlargement: true })
+          .avif({ quality: 62 })
+          .toFile(join(OUT, `${base}-${w}.avif`));
+      }
+      console.log(`Cropped ${base} at ${widths.join(", ")}px (AVIF + WebP).`);
+    }
+  }
+
+  const mobileMaster = join(OUT, "banner_mobile.png");
+  if (existsSync(mobileMaster)) {
+    await sharp(mobileMaster)
+      .extract(VILLAGE_CROP)
+      .webp({ quality: 84 })
+      .toFile(join(OUT, "hero-village.webp"));
+    await sharp(mobileMaster)
+      .extract(VILLAGE_CROP)
+      .avif({ quality: 62 })
+      .toFile(join(OUT, "hero-village.avif"));
+    console.log("Cropped hero-village from the mobile banner (AVIF + WebP).");
+  }
+
+  if (!source && existsSync(desktopMaster)) {
+    const meta = await sharp(desktopMaster).metadata();
+    const dim = { width: meta.width ?? 1983, height: meta.height ?? 793 };
+    await sharp(desktopMaster)
+      .extract(box(dim, HANDS_CROP))
+      .resize({ width: 1000, withoutEnlargement: true })
+      .webp({ quality: 84 })
+      .toFile(join(OUT, "dear-ones-hands.webp"));
+    console.log("Derived dear-ones-hands.webp from the desktop banner.");
+  }
+}
+
 async function main() {
   if (source) await fromSource();
   else await fromPlaceholders();
+  await processBanners();
 }
 
 main().catch((err) => {

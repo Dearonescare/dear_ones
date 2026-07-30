@@ -49,8 +49,8 @@ export function DistanceSection() {
               <Image
                 src="/images/dear-ones-hands.webp"
                 alt="A caregiver's hands gently holding the hands of an older person."
-                width={1000}
-                height={760}
+                width={674}
+                height={523}
                 sizes="(min-width: 1024px) 34vw, 0px"
                 className="h-full w-full object-cover"
               />

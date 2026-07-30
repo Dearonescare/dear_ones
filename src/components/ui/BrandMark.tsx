@@ -1,6 +1,13 @@
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 
+// "Your Love. Our Hands." — the two halves are coloured differently in the
+// brand lockup, so split on the first sentence break.
+const [taglineLead, taglineRest] = (() => {
+  const [first, ...rest] = siteConfig.tagline.split(/(?<=\.)\s+/);
+  return [first, rest.join(" ")];
+})();
+
 interface BrandMarkProps {
   /** Show the "Dear Ones" wordmark next to the symbol. */
   showText?: boolean;
@@ -61,8 +68,9 @@ export function BrandMark({
             {siteConfig.name}
           </span>
           {showTagline && (
-            <span className="mt-1 text-xs font-medium tracking-wide text-gold-dark">
-              {siteConfig.tagline}
+            <span className="mt-1 text-xs font-medium tracking-wide">
+              <span className="text-terracotta">{taglineLead}</span>
+              {taglineRest && <span className="text-gold-dark"> {taglineRest}</span>}
             </span>
           )}
         </span>

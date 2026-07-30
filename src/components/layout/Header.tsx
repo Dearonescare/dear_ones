@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navLinks } from "@/content/landing-page";
 import { BrandMark } from "@/components/ui/BrandMark";
@@ -38,7 +38,7 @@ export function Header() {
             className="rounded-lg py-1"
             aria-label={`${"Dear Ones"} — back to top`}
           >
-            <BrandMark />
+            <BrandMark showTagline />
           </a>
 
           <ul className="hidden items-center gap-8 lg:flex">
@@ -60,6 +60,9 @@ export function Header() {
               size="sm"
               className="hidden sm:inline-flex"
             >
+              <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15">
+                <Phone aria-hidden="true" className="h-3.5 w-3.5" />
+              </span>
               Speak With Us
             </Button>
             <button

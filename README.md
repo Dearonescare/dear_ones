@@ -27,7 +27,7 @@ comes from central configuration and is hidden gracefully when unset.
 npm install
 cp .env.example .env.local      # then fill in real values
 npm run process-images          # generate image assets (see below)
-npm run dev                     # http://localhost:3000
+npm run dev                     # http://localhost:4200
 ```
 
 ### Commands

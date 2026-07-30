@@ -19,14 +19,17 @@ import {
   PackageCheck,
   PenLine,
   PhoneCall,
+  ShieldCheck,
   ShoppingBag,
   Stethoscope,
   UserRound,
+  Users,
   Wrench,
 } from "lucide-react";
 import { serviceAreaLabel, siteConfig } from "@/config/site";
 import type {
   FaqItem,
+  HeroHighlight,
   HowItWorksStep,
   NavLink,
   OnDemandCategory,
@@ -54,12 +57,20 @@ export const navLinks: NavLink[] = [
 /* ---------- Hero ---------- */
 export const hero = {
   eyebrow: "NRI Parent Care & Elder Support",
-  titleLines: ["Trusted care for your parents.", "Peace of mind for you."],
+  titleLines: ["Trusted care and support for your parents."],
+  /** Rendered as the closing headline line in gold. */
+  titleAccent: "Peace of mind for you.",
   description:
-    "Dear Ones provides dependable local support for older adults living at home—with regular visits, everyday assistance, care coordination and clear family updates.",
+    "Dear Ones is a personalized support service for older adults living at home. We regularly visit your loved ones, monitor their wellbeing, help with everyday needs, coordinate medical care, and keep your family updated—so you always know they’re safe, supported, and never alone. We don’t replace family. We become the trusted helping hand nearby.",
   primaryCta: "Speak with a Care Coordinator",
   secondaryCta: "Explore Care Plans",
   trustLine: "Local support. Thoughtful care. Clear updates.",
+  highlights: [
+    { label: "Personalized care & regular visits", icon: HeartHandshake },
+    { label: "Safety, wellbeing & health monitoring", icon: ShieldCheck },
+    { label: "Help with daily needs & errands", icon: CalendarCheck },
+    { label: "Family updates & peace of mind", icon: Users },
+  ] satisfies HeroHighlight[],
 } as const;
 
 /* ---------- Four-part support model ---------- */
