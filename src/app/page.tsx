@@ -20,10 +20,10 @@ export default function HomePage() {
       <HeroSection />
       <SupportModelSection />
       <DistanceSection />
-      <AboutSection />
       <ServicesSection />
-      <FamilyUpdatesSection />
       <CarePlansSection />
+      <AboutSection />
+      <FamilyUpdatesSection />
       <OnDemandSection />
       <HowItWorksSection />
       <TrustSection />

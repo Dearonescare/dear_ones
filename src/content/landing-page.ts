@@ -113,6 +113,29 @@ export const distance = {
   ],
   closing:
     "Dear Ones becomes the dependable local presence your family wishes it had nearby.",
+  /** Illustrated collage. Order matches the scattered layout, top-left first. */
+  gallery: [
+    {
+      src: "/images/distance-companionship.webp",
+      alt: "A caregiver sitting with an older woman at home, holding her hands.",
+    },
+    {
+      src: "/images/distance-health-check.webp",
+      alt: "A caregiver taking an older man's blood pressure at his kitchen table.",
+    },
+    {
+      src: "/images/distance-transport.webp",
+      alt: "A caregiver helping an older woman step out of a car.",
+    },
+    {
+      src: "/images/distance-updates.webp",
+      alt: "A caregiver showing an older woman a photo on a phone.",
+    },
+    {
+      src: "/images/distance-comfort.webp",
+      alt: "An older woman resting by a sunny window with a warm drink.",
+    },
+  ],
 } as const;
 
 /* ---------- About ---------- */
@@ -144,6 +167,7 @@ export const services = {
         "Regular home visits, companionship, meaningful conversation and general wellbeing observation.",
       icon: HandHeart,
       featured: true,
+      image: "/images/service-wellbeing-visits.webp",
     },
     {
       title: "Routine Health Observations",
@@ -151,6 +175,7 @@ export const services = {
         "Support with blood pressure, blood sugar, pulse, oxygen saturation, weight records, medication reminders, nutrition and hydration.",
       note: "Observations and reminders only — not medical diagnosis or treatment.",
       icon: Activity,
+      image: "/images/service-health-observations.webp",
     },
     {
       title: "Medical Coordination",
@@ -158,18 +183,21 @@ export const services = {
         "Help coordinating doctor appointments, hospital visits, diagnostics, nursing, physiotherapy, medicine collection, and admission or discharge support where applicable.",
       note: "We coordinate care; clinical treatment is provided by qualified third-party professionals.",
       icon: Stethoscope,
+      image: "/images/service-medical-coordination.webp",
     },
     {
       title: "Everyday Assistance",
       description:
         "Groceries, essential errands, bill-related assistance, document collection, courier support, transportation and appointment accompaniment.",
       icon: ShoppingBag,
+      image: "/images/service-everyday-assistance.webp",
     },
     {
       title: "Home & Property Support",
       description:
         "Property inspections, maintenance coordination, electricians, plumbers, technicians, cleaning, pest control and supervision during the family’s absence.",
       icon: Home,
+      image: "/images/service-home-property.webp",
     },
     {
       title: "Family Updates",
@@ -177,6 +205,7 @@ export const services = {
         "Digital visit reports, consent-based photos, monthly summaries, important observations and urgent notifications.",
       icon: MessageSquareText,
       featured: true,
+      image: "/images/service-family-updates.webp",
     },
   ] satisfies ServiceItem[],
 } as const;

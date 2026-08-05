@@ -18,7 +18,7 @@
  * BrandMark.tsx), so no text crop from the photo is required.
  */
 import sharp from "sharp";
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -205,6 +205,29 @@ async function unmultiplyPlate(src, crop, plate) {
   });
 }
 
+/* ---------- Section artwork ---------- */
+// Masters are dropped in brand-source/<folder>/ and keep their filename; the
+// components reference /images/<name>.webp. None of these render wider than
+// ~400 CSS px, so 800px covers 2x displays and next/image takes it from there.
+const ARTWORK_FOLDERS = ["services", "distance"];
+const ARTWORK_WIDTH = 800;
+
+async function processSectionArtwork() {
+  for (const folder of ARTWORK_FOLDERS) {
+    const dir = join(ROOT, "brand-source", folder);
+    if (!existsSync(dir)) continue;
+    const files = readdirSync(dir).filter((f) => /\.(png|jpe?g|webp)$/i.test(f));
+    for (const file of files) {
+      const base = file.replace(/\.[^.]+$/, "");
+      await sharp(join(dir, file))
+        .resize({ width: ARTWORK_WIDTH, withoutEnlargement: true })
+        .webp({ quality: 82 })
+        .toFile(join(OUT, `${base}.webp`));
+    }
+    if (files.length) console.log(`Encoded ${files.length} ${folder} images to WebP.`);
+  }
+}
+
 async function processArtwork() {
   for (const { master, base } of HERO_BACKGROUNDS) {
     const src = join(OUT, master);
@@ -249,6 +272,7 @@ async function main() {
   if (source) await fromSource();
   else await fromPlaceholders();
   await processArtwork();
+  await processSectionArtwork();
 }
 
 main().catch((err) => {

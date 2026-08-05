@@ -24,6 +24,8 @@ export interface ServiceItem {
   note?: string;
   /** Featured items span two columns on desktop. */
   featured?: boolean;
+  /** Supporting photo, bled into the right edge of the card. */
+  image?: string;
 }
 
 export interface PlanInclusionGroup {
