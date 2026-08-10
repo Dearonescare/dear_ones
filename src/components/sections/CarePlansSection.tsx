@@ -286,9 +286,9 @@ export function CarePlansSection() {
               <div className="absolute inset-0 bg-gradient-to-b from-[#faf7f0] from-[0%] via-[#faf7f0] via-[55%] to-transparent md:hidden" />
 
               {/* Main text content */}
-              <div className="relative z-10 mx-auto w-full max-w-[1320px] px-5 sm:px-8 lg:px-12">
+              <div className="relative z-10 mx-auto w-full max-w-[1320px] px-5 sm:px-8">
                 <div className="flex min-h-[500px] items-start pb-[230px] pt-11 md:items-center md:pb-36 md:pt-0 lg:min-h-[535px]">
-                  <div className="w-full text-center md:max-w-[660px] lg:max-w-[700px]">
+                  <div className="w-full text-center md:max-w-150 lg:max-w-160">
                     {/* Eyebrow */}
                     <div className="flex items-center justify-center gap-4">
                       <span className="text-[15px] text-[#64815e]">✦</span>
