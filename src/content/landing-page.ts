@@ -157,14 +157,14 @@ export const about = {
 
 /* ---------- Services ---------- */
 export const services = {
-  heading:
-    "Support for everyday life—and the moments that need more care.",
+  heading: "How We Care for Your Loved Ones",
+  intro: "Thoughtful care, personalized for every family.",
   cta: "Discuss Your Family’s Needs",
   items: [
     {
       title: "Wellbeing Visits",
       description:
-        "Regular home visits, companionship, meaningful conversation and general wellbeing observation.",
+        "Regular home visits, companionship and meaningful conversations.",
       icon: HandHeart,
       featured: true,
       image: "/images/service-wellbeing-visits.webp",
@@ -172,37 +172,35 @@ export const services = {
     {
       title: "Routine Health Observations",
       description:
-        "Support with blood pressure, blood sugar, pulse, oxygen saturation, weight records, medication reminders, nutrition and hydration.",
-      note: "Observations and reminders only — not medical diagnosis or treatment.",
+        "Tracking vital health indicators and sharing important observations.",
       icon: Activity,
       image: "/images/service-health-observations.webp",
     },
     {
       title: "Medical Coordination",
       description:
-        "Help coordinating doctor appointments, hospital visits, diagnostics, nursing, physiotherapy, medicine collection, and admission or discharge support where applicable.",
-      note: "We coordinate care; clinical treatment is provided by qualified third-party professionals.",
+        "We coordinate appointments, hospital visits and other medical needs.",
       icon: Stethoscope,
       image: "/images/service-medical-coordination.webp",
     },
     {
       title: "Everyday Assistance",
       description:
-        "Groceries, essential errands, bill-related assistance, document collection, courier support, transportation and appointment accompaniment.",
+        "Help with groceries, errands, bills and other day-to-day needs.",
       icon: ShoppingBag,
       image: "/images/service-everyday-assistance.webp",
     },
     {
       title: "Home & Property Support",
       description:
-        "Property inspections, maintenance coordination, electricians, plumbers, technicians, cleaning, pest control and supervision during the family’s absence.",
+        "Property checks, maintenance coordination and trusted support while you’re away.",
       icon: Home,
       image: "/images/service-home-property.webp",
     },
     {
       title: "Family Updates",
       description:
-        "Digital visit reports, consent-based photos, monthly summaries, important observations and urgent notifications.",
+        "Regular updates, photos and reports so you always feel connected.",
       icon: MessageSquareText,
       featured: true,
       image: "/images/service-family-updates.webp",

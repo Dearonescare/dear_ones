@@ -48,6 +48,45 @@ export interface PlanTier {
   badge?: string;
 }
 
+export type CarePlanId = "essential" | "plus" | "elite";
+
+/** A tab in the care-plan selector. */
+export interface CarePlanTierCard {
+  id: CarePlanId;
+  number: string;
+  eyebrow: string;
+  name: string;
+  tagline: string;
+  icon: LucideIcon;
+}
+
+/** One titled bullet list inside a care-plan section. */
+export interface CarePlanBenefitGroup {
+  title: string;
+  icon: LucideIcon;
+  items: string[];
+}
+
+/** A numbered block of the plan panel, e.g. "Your Membership Includes". */
+export interface CarePlanSection {
+  title: string;
+  /** Right-aligned caption in the section bar. */
+  caption: string;
+  icon: LucideIcon;
+  groups: CarePlanBenefitGroup[];
+}
+
+export interface CarePlanDetail {
+  /** Panel title, e.g. "Dear Care Plus". */
+  title: string;
+  description: string;
+  /** Closing reassurance shown under the illustration. */
+  note: string;
+  membership: CarePlanSection;
+  /** Absent on Essential, which has no extra tier of benefits. */
+  additional?: CarePlanSection;
+}
+
 export interface OnDemandCategory {
   title: string;
   description: string;

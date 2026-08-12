@@ -5,183 +5,123 @@ import { useState } from "react";
 import {
   ArrowRight,
   BellRing,
-  CalendarDays,
   Clock3,
   Heart,
-  HeartHandshake,
-  HeartPulse,
-  Hospital,
   LockKeyhole,
   MapPin,
   PhoneCall,
   ShieldCheck,
-  Siren,
-  Stethoscope,
   UsersRound,
-  Zap,
 } from "lucide-react";
 
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
+import { carePlanDetails, carePlanTiers } from "@/content/care-plans";
+import type { CarePlanId, CarePlanSection } from "@/types";
 
-type PlanId = "essential" | "plus" | "elite";
+/**
+ * A numbered block of the plan panel: tinted title bar, then one benefit
+ * group per grid cell. Every cell draws its own top/left hairline and the
+ * grid is nudged a pixel up and left inside a clipping wrapper, so the
+ * outermost rules fall outside the frame — that yields dividers *between*
+ * cells at any column count, without nth-child maths per breakpoint.
+ */
+function PlanSectionBlock({
+  index,
+  section,
+  columnsClass,
+}: {
+  index: number;
+  section: CarePlanSection;
+  columnsClass: string;
+}) {
+  const SectionIcon = section.icon;
 
-const plans = [
-  {
-    id: "essential" as PlanId,
-    number: "01",
-    eyebrow: "DEAR CARE",
-    name: "Essential",
-    tagline: "WE VISIT & MONITOR",
-    icon: HeartHandshake,
-  },
-  {
-    id: "plus" as PlanId,
-    number: "02",
-    eyebrow: "DEAR CARE",
-    name: "Plus",
-    tagline: "WE VISIT, MONITOR & ASSIST",
-    icon: UsersRound,
-  },
-  {
-    id: "elite" as PlanId,
-    number: "03",
-    eyebrow: "DEAR CARE",
-    name: "Elite",
-    tagline: "WE CARE, COMPANION & MANAGE",
-    icon: HeartPulse,
-  },
-];
+  return (
+    <section>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[14px] border border-[#d9e5f2] bg-linear-to-r from-[#e8f1fb] via-[#f1f7fd] to-[#fbfcfe] px-3 py-2.5">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px] border border-[#cfe0f1] bg-white text-[#1f61a8] shadow-[0_3px_9px_rgba(31,97,168,0.13)]">
+          <SectionIcon className="h-4.5 w-4.5" strokeWidth={1.8} />
+        </span>
 
-const planContent = {
+        <span className="font-serif text-[19px] font-semibold leading-none text-[#3d84cb]">
+          {index}
+        </span>
+
+        <h3 className="text-[14px] font-bold tracking-[-0.01em] text-[#17568f] sm:text-[15px]">
+          {section.title}
+        </h3>
+
+        <p className="text-[11px] font-semibold text-[#5486b6] sm:ml-auto sm:text-[12px]">
+          {section.caption}
+        </p>
+      </div>
+
+      <div className="mt-3 overflow-hidden">
+        <div className={`-ml-px -mt-px grid ${columnsClass}`}>
+          {section.groups.map((group) => {
+            const Icon = group.icon;
+
+            return (
+              <div
+                key={group.title}
+                className="border-l border-t border-[#e7edf4] px-4 py-4"
+              >
+                <div className="flex items-start gap-2.5">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#e9f1fb] text-[#245a9f]">
+                    <Icon className="h-4.25 w-4.25" strokeWidth={1.8} />
+                  </span>
+
+                  <h4 className="pt-1.5 text-[12.5px] font-bold leading-tight tracking-[-0.01em] text-[#1c62ab]">
+                    {group.title}
+                  </h4>
+                </div>
+
+                <ul className="mt-2.5 space-y-1.5">
+                  {group.items.map((item) => (
+                    <li
+                      key={item}
+                      className="grid grid-cols-[9px_minmax(0,1fr)] gap-1.5 text-[11.5px] leading-[1.55] text-[#54606a]"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="mt-1.75 h-0.75 w-0.75 rounded-full bg-[#9db6cd]"
+                      />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Unselected tabs keep their own soft tint; the selected one always turns
+ * brand olive, so colour reads as state rather than as plan identity.
+ */
+const idlePalettes: Record<
+  CarePlanId,
+  { card: string; icon: string; number: string }
+> = {
   essential: {
-    heading: "Essential Care. Reliable Support.",
-    description:
-      "Regular visits and monitoring to make sure your parents are safe, comfortable and well supported.",
-    idealFor:
-      "Ideal for parents who need regular check-ins, monitoring and family updates.",
-    services: [
-      {
-        title: "Scheduled Home Visits",
-        description: "Regular visits from our trusted local care team.",
-        icon: CalendarDays,
-      },
-      {
-        title: "Regular Updates",
-        description: "Stay informed through clear reports, photos and calls.",
-        icon: BellRing,
-      },
-      {
-        title: "Wellness Monitoring",
-        description:
-          "We check general wellbeing and report important changes.",
-        icon: HeartPulse,
-      },
-      {
-        title: "Family Coordination",
-        description:
-          "We stay connected with your family whenever support is needed.",
-        icon: UsersRound,
-      },
-      {
-        title: "Local Assistance",
-        description:
-          "Dependable support from a care team located nearby.",
-        icon: MapPin,
-      },
-      {
-        title: "Peace of Mind",
-        description: "You stay informed even when you cannot be there.",
-        icon: Heart,
-      },
-    ],
+    card: "border-[#d8e2d3] bg-[#f1f6ec] text-[#1d502f]",
+    icon: "bg-[#397e45] text-white",
+    number: "text-[#245b34]",
   },
-
   plus: {
-    heading: "More Support. More Peace of Mind.",
-    description:
-      "Everything in Essential, plus extra support when they need it most.",
-    idealFor:
-      "Ideal for parents who may need occasional medical visits or extra support.",
-    services: [
-      {
-        title: "All Essential Plan Services",
-        description: "Includes all services in Dear Care Essential.",
-        icon: ShieldCheck,
-      },
-      {
-        title: "Priority Response",
-        description: "Faster response for urgent needs.",
-        icon: Zap,
-      },
-      {
-        title: "Emergency Support",
-        description:
-          "Immediate family notification, ambulance coordination, hospital coordination, relative and neighbour coordination.",
-        icon: Siren,
-      },
-      {
-        title: "Care Coordination",
-        description:
-          "We coordinate with doctors, hospitals and service providers for seamless care.",
-        icon: UsersRound,
-      },
-      {
-        title: "Medical Assistance",
-        description:
-          "Hospital or clinic accompaniment, doctor appointment assistance, medicine collection and prescription pickup.",
-        icon: Hospital,
-      },
-      {
-        title: "Peace of Mind",
-        description: "You’re always informed. We’re always there.",
-        icon: Heart,
-      },
-    ],
+    card: "border-[#cfe0f1] bg-[#eef4fb] text-[#1c5487]",
+    icon: "bg-white text-[#245a9e]",
+    number: "text-[#1f61a8]",
   },
-
   elite: {
-    heading: "Complete Care. Constant Reassurance.",
-    description:
-      "Everything in Plus, with companionship, personal assistance and complete care management.",
-    idealFor:
-      "Ideal for parents who need frequent assistance, companionship and complete care coordination.",
-    services: [
-      {
-        title: "All Plus Plan Services",
-        description: "Includes all services in Dear Care Plus.",
-        icon: ShieldCheck,
-      },
-      {
-        title: "Dedicated Care Manager",
-        description: "One trusted point of contact for your family.",
-        icon: UsersRound,
-      },
-      {
-        title: "Companion Support",
-        description:
-          "Regular companionship and assistance with daily needs.",
-        icon: HeartHandshake,
-      },
-      {
-        title: "Healthcare Coordination",
-        description:
-          "Complete coordination with doctors, clinics and hospitals.",
-        icon: Stethoscope,
-      },
-      {
-        title: "Priority Assistance",
-        description:
-          "Faster coordination whenever urgent support is required.",
-        icon: Zap,
-      },
-      {
-        title: "Complete Peace of Mind",
-        description:
-          "Continuous support, communication and reassurance.",
-        icon: Heart,
-      },
-    ],
+    card: "border-[#eadfca] bg-[#fffaf1] text-[#aa7414]",
+    icon: "bg-white text-[#b88422]",
+    number: "text-[#b47c18]",
   },
 };
 
@@ -238,9 +178,9 @@ const trustItems = [
 ];
 
 export function CarePlansSection() {
-  const [selectedPlan, setSelectedPlan] = useState<PlanId>("plus");
+  const [selectedPlan, setSelectedPlan] = useState<CarePlanId>("plus");
 
-  const activePlan = planContent[selectedPlan];
+  const activePlan = carePlanDetails[selectedPlan];
 
   return (
     <section
@@ -364,15 +304,12 @@ export function CarePlansSection() {
 
             {/* Plan selector overlaps the hero */}
          {/* Compact plan selector */}
-<div className="relative z-20 -mt-[96px] px-4 sm:px-7 lg:px-12">
-  <div className="grid gap-3 md:grid-cols-3 md:items-end md:gap-0">
-    {plans.map((plan) => {
+<div className="relative z-20 -mt-[96px]">
+  <div className="grid grid-cols-3 items-end gap-1.5 sm:gap-2 md:gap-0">
+    {carePlanTiers.map((plan) => {
       const Icon = plan.icon;
       const isSelected = selectedPlan === plan.id;
-
-      const isEssential = plan.id === "essential";
-      const isPlus = plan.id === "plus";
-      const isElite = plan.id === "elite";
+      const idle = idlePalettes[plan.id];
 
       return (
         <button
@@ -381,168 +318,110 @@ export function CarePlansSection() {
           onClick={() => setSelectedPlan(plan.id)}
           aria-pressed={isSelected}
           className={[
-            "relative w-full border px-5 pb-4 pt-8 text-center transition-all duration-300",
+            "relative w-full border px-2 pb-3 pt-7 text-center transition-all duration-300 sm:px-4 sm:pb-4 sm:pt-8",
             "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#aac4e5]",
+            "rounded-t-[16px] sm:rounded-t-[24px]",
 
-            isEssential
-              ? "rounded-t-[24px] border-[#d8e2d3] bg-[#f1f6ec] text-[#1d502f] md:rounded-tr-none"
-              : "",
+            plan.id === "essential" ? "md:rounded-tr-none" : "",
+            plan.id === "elite" ? "md:rounded-tl-none" : "",
 
-            isPlus
-              ? "rounded-t-[24px] border-[#245a9e] bg-gradient-to-b from-[#3972b8] to-[#21589f] text-white"
-              : "",
-
-            isElite
-              ? "rounded-t-[24px] border-[#eadfca] bg-[#fffaf1] text-[#aa7414] md:rounded-tl-none"
-              : "",
-
+            // Selection reads as the deep brand blue, whichever plan it is.
             isSelected
-              ? "z-20 min-h-[154px] -translate-y-1 shadow-[0_14px_28px_rgba(33,72,120,0.18)]"
-              : "z-10 min-h-[142px] hover:-translate-y-1",
+              ? "z-20 min-h-[132px] -translate-y-1 border-[#245a9e] bg-linear-to-b from-[#3972b8] to-[#21589f] text-white shadow-[0_14px_28px_rgba(33,72,120,0.18)] sm:min-h-[154px]"
+              : `z-10 min-h-[124px] hover:-translate-y-1 sm:min-h-[142px] ${idle.card}`,
           ].join(" ")}
         >
-          {/* Smaller plan icon */}
           <div
             className={[
-              "absolute left-1/2 top-0 flex h-[62px] w-[62px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[5px] border-[#faf7f0] shadow-[0_6px_14px_rgba(45,53,41,0.14)]",
+              "absolute left-1/2 top-0 flex h-[46px] w-[46px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] border-[#faf7f0] shadow-[0_6px_14px_rgba(45,53,41,0.14)] sm:h-[62px] sm:w-[62px] sm:border-[5px]",
 
-              isEssential ? "bg-[#397e45] text-white" : "",
-              isPlus ? "bg-white text-[#245a9e]" : "",
-              isElite ? "bg-white text-[#b88422]" : "",
+              isSelected ? "bg-white text-[#245a9e]" : idle.icon,
             ].join(" ")}
           >
-            <Icon className="h-7 w-7" strokeWidth={1.7} />
+            <Icon className="h-5 w-5 sm:h-7 sm:w-7" strokeWidth={1.7} />
           </div>
 
           <div className="flex items-center text-left">
             <span
               className={[
-                "font-serif text-[18px] leading-none",
-                isEssential ? "text-[#245b34]" : "",
-                isPlus ? "text-white" : "",
-                isElite ? "text-[#b47c18]" : "",
+                "font-serif text-[14px] leading-none sm:text-[18px]",
+                isSelected ? "text-white/85" : idle.number,
               ].join(" ")}
             >
               {plan.number}
             </span>
           </div>
 
-          <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.08em]">
+          <p className="mt-0.5 text-[8px] font-bold uppercase tracking-[0.06em] sm:text-[10px] sm:tracking-[0.08em]">
             {plan.eyebrow}
           </p>
 
-          <h3 className="mt-1 font-serif text-[27px] font-semibold leading-none tracking-[-0.02em]">
+          <h3 className="mt-1 font-serif text-[19px] font-semibold leading-none tracking-[-0.02em] sm:text-[27px]">
             {plan.name}
           </h3>
 
-          <p className="mt-3 text-[9px] font-bold uppercase tracking-[0.04em]">
+          <p className="mt-2 text-[7px] font-bold uppercase leading-[1.35] tracking-[0.03em] sm:mt-3 sm:text-[9px] sm:tracking-[0.04em]">
             {plan.tagline}
           </p>
 
           {isSelected && (
-            <span
-              className={[
-                "absolute -bottom-[9px] left-1/2 h-[18px] w-[18px] -translate-x-1/2 rotate-45",
-                isEssential ? "bg-[#f1f6ec]" : "",
-                isPlus ? "bg-[#21589f]" : "",
-                isElite ? "bg-[#fffaf1]" : "",
-              ].join(" ")}
-            />
+            <span className="absolute -bottom-[6px] left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 bg-[#21589f] sm:-bottom-[9px] sm:h-4.5 sm:w-4.5" />
           )}
         </button>
       );
     })}
   </div>
 
-  {/* Compact selected-plan details */}
+  {/* Selected-plan details */}
   <div className="relative z-30 rounded-[26px] border border-[#dde5ed] bg-[#fbfcfe] px-5 py-6 shadow-[0_16px_42px_rgba(36,70,105,0.10)] sm:px-6 lg:px-8 lg:py-7">
-    <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
+    <div className="grid gap-6 lg:grid-cols-[212px_minmax(0,1fr)] lg:gap-7">
       {/* Left summary */}
       <div className="border-b border-[#dfe4e8] pb-6 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-7">
-        <h3 className="font-serif text-[24px] font-semibold leading-[1.18] tracking-[-0.02em] text-[#173d60]">
-          {activePlan.heading.split(". ").map((line, index, array) => (
-            <span key={`${line}-${index}`}>
-              {line}
-              {index < array.length - 1 ? "." : ""}
-              {index < array.length - 1 && <br />}
-            </span>
-          ))}
+        <h3 className="font-serif text-[24px] font-semibold leading-[1.18] tracking-[-0.02em] text-[#1c5f9e]">
+          {activePlan.title}
         </h3>
 
-        <p className="mt-4 max-w-[205px] text-[13px] font-medium leading-[1.5] text-[#4a555d]">
+        <p className="mt-3 text-[13px] font-medium leading-normal text-[#4a555d]">
           {activePlan.description}
         </p>
 
-        {/* Smaller illustration */}
-        <div className="relative mt-5 h-[145px] overflow-hidden rounded-[18px] bg-white">
+        <div className="relative mt-5 h-36 overflow-hidden rounded-[18px] bg-white">
           <Image
             src="/images/plan_img.png"
             alt="Care professional walking with an elderly parent"
             fill
             className="object-contain object-center"
-            sizes="220px"
+            sizes="212px"
           />
         </div>
-      </div>
 
-      {/* Compact services */}
-      <div className="min-w-0">
-        <div className="grid md:grid-cols-2">
-          {activePlan.services.map((service, index) => {
-            const Icon = service.icon;
-            const isLastItem =
-              index === activePlan.services.length - 1;
-            const isDesktopLastRow =
-              index >= activePlan.services.length - 2;
-
-            return (
-              <div
-                key={service.title}
-                className={[
-                  "grid grid-cols-[40px_minmax(0,1fr)] items-start gap-3 py-4",
-
-                  !isLastItem
-                    ? "border-b border-[#e4e8ec]"
-                    : "",
-
-                  isDesktopLastRow
-                    ? "md:border-b-0"
-                    : "md:border-b md:border-[#e4e8ec]",
-
-                  index % 2 === 0
-                    ? "md:border-r md:border-[#e4e8ec] md:pr-6"
-                    : "md:pl-6",
-                ].join(" ")}
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#edf3fb] text-[#245a9f]">
-                  <Icon className="h-5 w-5" strokeWidth={1.7} />
-                </div>
-
-                <div className="min-w-0">
-                  <h4 className="text-[13px] font-semibold leading-5 text-[#26313a]">
-                    {service.title}
-                  </h4>
-
-                  <p className="mt-1 text-[12px] font-normal leading-[1.55] text-[#59646d]">
-                    {service.description}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Smaller ideal-for note */}
-        <div className="mt-4 flex items-start gap-3 rounded-[12px] bg-[#edf3fa] px-4 py-3">
-          <CalendarDays
-            className="mt-0.5 h-5 w-5 shrink-0 text-[#245a9f]"
+        <div className="mt-5 rounded-[16px] bg-[#edf3fb] px-4 py-4">
+          <ShieldCheck
+            className="h-5 w-5 text-[#2b6098]"
             strokeWidth={1.7}
           />
 
-          <p className="text-[12px] font-medium leading-5 text-[#315a82]">
-            {activePlan.idealFor}
+          <p className="mt-2.5 text-[12px] font-medium leading-[1.65] text-[#2f5f8c]">
+            {activePlan.note}
           </p>
         </div>
+      </div>
+
+      {/* Numbered sections */}
+      <div className="min-w-0 space-y-6">
+        <PlanSectionBlock
+          index={1}
+          section={activePlan.membership}
+          columnsClass="sm:grid-cols-2 lg:grid-cols-3"
+        />
+
+        {activePlan.additional && (
+          <PlanSectionBlock
+            index={2}
+            section={activePlan.additional}
+            columnsClass="sm:grid-cols-2 lg:grid-cols-3"
+          />
+        )}
       </div>
     </div>
 
@@ -550,11 +429,11 @@ export function CarePlansSection() {
     <div className="mt-5 flex justify-center">
       <a
         href="#contact"
-        className="group inline-flex min-h-[48px] w-full max-w-[300px] items-center justify-between rounded-full bg-[#1762b7] py-2 pl-6 pr-2 text-[13px] font-semibold text-white shadow-[0_9px_20px_rgba(23,98,183,0.22)] transition hover:-translate-y-0.5 hover:bg-[#1058a8]"
+        className="group inline-flex min-h-[48px] w-full max-w-[340px] items-center justify-between rounded-full bg-[#1762b7] py-2 pl-6 pr-2 text-[13px] font-semibold text-white shadow-[0_9px_20px_rgba(23,98,183,0.22)] transition hover:-translate-y-0.5 hover:bg-[#1058a8]"
       >
         <span>
           Explore Dear Care{" "}
-          {plans.find((plan) => plan.id === selectedPlan)?.name}
+          {carePlanTiers.find((plan) => plan.id === selectedPlan)?.name}
         </span>
 
         <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/60">
@@ -569,7 +448,7 @@ export function CarePlansSection() {
 </div>
 
             {/* Bottom trust strip */}
-            <div className="px-4 pb-7 pt-14 sm:px-7 lg:px-12">
+            <div className="pb-7 pt-14">
               <div className="rounded-[23px] border border-[#e4dfd5] bg-white/65 px-5 py-6">
                 <div className="mb-6 flex items-center justify-center gap-3">
                   <Heart
@@ -634,7 +513,7 @@ export function CarePlansSection() {
                 </p>
 
                 <Heart
-                  className="h-[18px] w-[18px] text-[#39453e]"
+                  className="h-4.5 w-4.5 text-[#39453e]"
                   strokeWidth={1.4}
                 />
 
