@@ -1,4 +1,9 @@
-import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
+import {
+  FacebookIcon,
+  InstagramIcon,
+  WhatsappIcon,
+} from "@/components/ui/BrandIcons";
 import {
   getMailtoHref,
   getTelHref,
@@ -16,6 +21,20 @@ export function Footer() {
   const tel = getTelHref();
   const wa = getWhatsappHref();
   const mail = getMailtoHref("Dear Ones enquiry");
+
+  // Unconfigured profiles stay out of the markup entirely.
+  const socials = [
+    {
+      label: "Facebook",
+      href: siteConfig.socialLinks.facebook,
+      Icon: FacebookIcon,
+    },
+    {
+      label: "Instagram",
+      href: siteConfig.socialLinks.instagram,
+      Icon: InstagramIcon,
+    },
+  ].filter((item) => Boolean(item.href));
 
   return (
     <footer className="border-t border-line bg-background-soft">
@@ -81,7 +100,7 @@ export function Footer() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2.5 transition-colors hover:text-terracotta"
                   >
-                    <MessageCircle aria-hidden="true" className="h-4 w-4 text-gold-dark" />
+                    <WhatsappIcon className="h-4 w-4 text-gold-dark" />
                     WhatsApp
                   </a>
                 </li>
@@ -103,10 +122,34 @@ export function Footer() {
               </li>
               {!hasAnyContactChannel() && (
                 <li className="text-muted">
-                  Contact details coming soon — please use the enquiry form.
+                  Contact details coming soon — please reach out to us shortly.
                 </li>
               )}
             </ul>
+
+            {socials.length > 0 && (
+              <>
+                <h2 className="mt-8 text-sm font-semibold uppercase tracking-[0.14em] text-gold-dark">
+                  Follow us
+                </h2>
+                <ul className="mt-4 flex items-center gap-3">
+                  {socials.map(({ label, href, Icon }) => (
+                    <li key={label}>
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${siteConfig.name} on ${label}`}
+                        title={label}
+                        className="grid h-10 w-10 place-items-center rounded-full border border-line bg-surface text-brown-soft transition-colors hover:border-gold hover:text-terracotta"
+                      >
+                        <Icon className="h-4.5 w-4.5" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
         </div>
 

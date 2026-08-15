@@ -4,14 +4,18 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Menu, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { siteConfig } from "@/config/site";
+import { getTelHref, getWhatsappHref, siteConfig } from "@/config/site";
+import { trackEvent } from "@/lib/analytics";
 import { navLinks } from "@/content/landing-page";
 import { Button } from "@/components/ui/Button";
+import { WhatsappIcon } from "@/components/ui/BrandIcons";
 import { MobileNavigation } from "@/components/layout/MobileNavigation";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const tel = getTelHref();
+  const wa = getWhatsappHref();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -69,8 +73,28 @@ export function Header() {
                 The wrapper does the hiding: Button's base class sets
                 `inline-flex`, which would otherwise beat a `hidden` passed
                 through className (cn is a plain join, not tailwind-merge). */}
+            {wa && (
+              <a
+                href={wa}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("whatsapp_click")}
+                aria-label="Message Dear Ones on WhatsApp"
+                title="Chat on WhatsApp"
+                className="hidden h-11 w-11 place-items-center rounded-full border border-[#25683f]/25 bg-[#25683f]/10 text-[#25683f] transition-colors hover:bg-[#25683f] hover:text-white lg:grid"
+              >
+                <WhatsappIcon className="h-5 w-5" />
+              </a>
+            )}
+
             <div className="hidden lg:block">
-              <Button href="#contact" size="sm">
+              {/* Dials straight out instead of scrolling to the contact
+                  section — the number is the fastest path for this audience. */}
+              <Button
+                href={tel ?? "#contact"}
+                size="sm"
+                analyticsEvent={tel ? "phone_click" : undefined}
+              >
                 <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15">
                   <Phone aria-hidden="true" className="h-3.5 w-3.5" />
                 </span>

@@ -37,8 +37,16 @@ export const siteConfig = {
 
   // Contact channels (public). Empty string => hidden in the UI.
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
-  phone: process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "",
+  phone: process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "+91 88776 67959",
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "",
+  /**
+   * WhatsApp "click to chat" short link for the business account. Used as-is
+   * when present, because a wa.me/message/<code> link carries its own
+   * destination and cannot take a ?text= prefill.
+   */
+  whatsappLink:
+    process.env.NEXT_PUBLIC_WHATSAPP_LINK ??
+    "https://wa.me/message/KYLKNFBKJ6JXJ1",
 
   // Where enquiries are delivered (server-side only usage).
   formRecipient: process.env.CONTACT_TO_EMAIL ?? "",
@@ -61,9 +69,13 @@ export const siteConfig = {
   availableLanguages: ["English"],
 
   socialLinks: {
-    // TODO: add real profile URLs. Empty entries are ignored everywhere.
-    instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "",
-    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL ?? "",
+    // Empty entries are ignored everywhere.
+    instagram:
+      process.env.NEXT_PUBLIC_INSTAGRAM_URL ??
+      "https://www.instagram.com/dearones.eldercare",
+    facebook:
+      process.env.NEXT_PUBLIC_FACEBOOK_URL ??
+      "https://www.facebook.com/share/17N9TkoNiV/",
     linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL ?? "",
   },
 
@@ -98,6 +110,9 @@ export function getTelHref(): string | null {
 }
 
 export function getWhatsappHref(prefilled?: string): string | null {
+  // A configured short link wins; it already points at the right account and
+  // does not support a prefilled message.
+  if (siteConfig.whatsappLink) return siteConfig.whatsappLink;
   if (!siteConfig.whatsapp) return null;
   const number = toDigits(siteConfig.whatsapp);
   if (!number) return null;
@@ -112,7 +127,12 @@ export function getMailtoHref(subject?: string): string | null {
 }
 
 export function hasAnyContactChannel(): boolean {
-  return Boolean(siteConfig.phone || siteConfig.whatsapp || siteConfig.email);
+  return Boolean(
+    siteConfig.phone ||
+      siteConfig.whatsapp ||
+      siteConfig.whatsappLink ||
+      siteConfig.email
+  );
 }
 
 /** Human-readable service-area string, or a neutral fallback. */

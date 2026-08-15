@@ -27,8 +27,8 @@ export default function HomePage() {
       <OnDemandSection />
       <HowItWorksSection />
       <TrustSection />
-      <FAQSection />
       <ContactSection />
+      <FAQSection />
     </>
   );
 }
