@@ -12,6 +12,31 @@
 
 const rawServiceAreas = process.env.NEXT_PUBLIC_SERVICE_AREAS ?? "";
 
+const DEFAULT_SITE_URL = "http://localhost:4200";
+
+/**
+ * Normalise  into an absolute origin.
+ *
+ * `metadataBase` feeds this straight into `new URL()`, so a value that is
+ * merely a bare host ("dear-ones.example") throws at module evaluation and
+ * fails the production build. Accept the forms people actually paste into a
+ * hosting dashboard, and fall back rather than taking the build down.
+ */
+function resolveSiteUrl(raw: string | undefined): string {
+  const trimmed = (raw ?? "").trim().replace(/\/+$/, "");
+  if (!trimmed) return DEFAULT_SITE_URL;
+
+  const withProtocol = /^https?:\/\//i.test(trimmed)
+    ? trimmed
+    : `https://${trimmed.replace(/^\/+/, "")}`;
+
+  try {
+    return new URL(withProtocol).origin;
+  } catch {
+    return DEFAULT_SITE_URL;
+  }
+}
+
 export interface SiteAddress {
   streetAddress?: string;
   locality?: string;
@@ -30,10 +55,7 @@ export const siteConfig = {
   shortDescription:
     "Trusted local support for parents living at home — with regular visits, everyday assistance, care coordination and clear family updates.",
 
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:4200").replace(
-    /\/$/,
-    ""
-  ),
+  url: resolveSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
 
   // Contact channels (public). Empty string => hidden in the UI.
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
