@@ -56,15 +56,22 @@ export const navLinks: NavLink[] = [
 
 /* ---------- Hero ---------- */
 export const hero = {
-  eyebrow: "NRI Parent Care & Elder Support",
+  // The eyebrow sits directly above the h1 and is the first text on the page,
+  // so it carries the service + location keywords that local searches use.
+  eyebrow: siteConfig.serviceAreas.length
+    ? `NRI Parent Care · ${siteConfig.serviceAreas.join(" & ")}`
+    : "NRI Parent Care & Elder Support",
   titleLines: ["Trusted care and support for your parents."],
   /** Rendered as the closing headline line in gold. */
   titleAccent: "Peace of mind for you.",
-  description:
-    "Dear Ones is a personalized support service for older adults living at home. We regularly visit your loved ones, monitor their wellbeing, help with everyday needs, coordinate medical care, and keep your family updated—so you always know they’re safe, supported, and never alone. We don’t replace family. We become the trusted helping hand nearby.",
+  description: siteConfig.serviceAreas.length
+    ? `Dear Ones is a personalized elder care service in ${serviceAreaLabel()}, supporting older adults living at home. We regularly visit your loved ones, monitor their wellbeing, help with everyday needs, coordinate medical care, and keep your family updated—so you always know they’re safe, supported, and never alone. We don’t replace family. We become the trusted helping hand nearby.`
+    : "Dear Ones is a personalized support service for older adults living at home. We regularly visit your loved ones, monitor their wellbeing, help with everyday needs, coordinate medical care, and keep your family updated—so you always know they’re safe, supported, and never alone. We don’t replace family. We become the trusted helping hand nearby.",
   primaryCta: "Speak with a Care Coordinator",
   secondaryCta: "Explore Care Plans",
-  trustLine: "Local support. Thoughtful care. Clear updates.",
+  trustLine: siteConfig.serviceAreas.length
+    ? `Local support in ${serviceAreaLabel()}. Thoughtful care. Clear updates.`
+    : "Local support. Thoughtful care. Clear updates.",
   highlights: [
     { label: "Personalized care & regular visits", icon: HeartHandshake },
     { label: "Safety, wellbeing & health monitoring", icon: ShieldCheck },

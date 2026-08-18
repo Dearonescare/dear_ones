@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
-import { siteConfig } from "@/config/site";
+import { siteConfig, seoLocationPhrase } from "@/config/site";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileContactBar } from "@/components/layout/MobileContactBar";
@@ -22,12 +22,37 @@ const sans = Manrope({
 });
 
 const area = siteConfig.primaryServiceArea;
+const locationPhrase = seoLocationPhrase();
+
 const titleDefault = area
-  ? `${siteConfig.name} | NRI Parent Care & Elder Support in ${area}`
+  ? `${siteConfig.name} | Elder Care & NRI Parent Care in ${area}`
   : `${siteConfig.name} | NRI Parent Care & Elder Support`;
 
-const description =
-  "Trusted local support for parents living at home, including wellbeing visits, everyday assistance, care coordination and clear family updates.";
+// The location has to appear in the description itself: it is what Google
+// shows in the result snippet and it carries the local search terms.
+const description = locationPhrase
+  ? `Elder care and NRI parent care in ${locationPhrase}. Dear Ones provides regular wellbeing visits, everyday assistance, medical coordination and clear family updates for parents living at home.`
+  : "Trusted local support for parents living at home, including wellbeing visits, everyday assistance, care coordination and clear family updates.";
+
+/**
+ * Kept deliberately short and truthful. Google ignores this tag, but Bing and
+ * several regional crawlers still read it, and it costs nothing.
+ */
+const keywords = [
+  "elder care",
+  "elder care services",
+  "NRI parent care",
+  "home care for elderly parents",
+  "senior care",
+  "elderly care at home",
+  ...siteConfig.serviceAreas.flatMap((a) => [
+    `elder care ${a}`,
+    `home care for parents ${a}`,
+  ]),
+  ...(siteConfig.region ? [`elder care ${siteConfig.region}`] : []),
+  siteConfig.name,
+  ...siteConfig.alternateNames,
+];
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -36,7 +61,12 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description,
+  keywords,
   applicationName: siteConfig.name,
+  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
+  category: "Elder care",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
@@ -44,7 +74,7 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     title: titleDefault,
     description,
-    locale: "en_US",
+    locale: "en_IN",
   },
   twitter: {
     card: "summary_large_image",

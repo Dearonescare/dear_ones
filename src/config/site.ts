@@ -10,7 +10,16 @@
  * See .env.example for the full list.
  */
 
-const rawServiceAreas = process.env.NEXT_PUBLIC_SERVICE_AREAS ?? "";
+/**
+ * Service areas Dear Ones actually operates in, matching the public Instagram
+ * profile ("NRI Parent Care Malappuram & Kozhikode"). Baked in as a default so
+ * the SEO templates always carry a location, exactly as the phone number and
+ * social links already do; the env var still overrides it.
+ */
+const DEFAULT_SERVICE_AREAS = "Malappuram, Kozhikode";
+
+const rawServiceAreas =
+  process.env.NEXT_PUBLIC_SERVICE_AREAS ?? DEFAULT_SERVICE_AREAS;
 
 const DEFAULT_SITE_URL = "http://localhost:4200";
 
@@ -50,6 +59,17 @@ const address: SiteAddress | null = null;
 
 export const siteConfig = {
   name: "Dear Ones",
+  /**
+   * Brand spellings people actually type. Published as schema.org
+   * `alternateName` so Google links these queries to this entity rather than
+   * to the unrelated "Dear Ones" gifting and memory-app products.
+   */
+  alternateNames: [
+    "DearOnes",
+    "Dear Ones Elder Care",
+    "Dear Ones Eldercare",
+    "dearones.in",
+  ],
   legalName: process.env.NEXT_PUBLIC_LEGAL_NAME ?? "", // TODO: registered business name
   tagline: "Your Love. Our Hands.",
   shortDescription:
@@ -79,10 +99,13 @@ export const siteConfig = {
     .map((s) => s.trim())
     .filter(Boolean),
 
-  // TODO: confirm the primary marketing service area for SEO templates.
-  primaryServiceArea: process.env.NEXT_PUBLIC_PRIMARY_AREA ?? "",
+  /** Leading area used in SEO titles and headings. */
+  primaryServiceArea: process.env.NEXT_PUBLIC_PRIMARY_AREA ?? "Malappuram",
 
-  country: process.env.NEXT_PUBLIC_COUNTRY ?? "",
+  /** State/region the service areas sit in, used for local search phrasing. */
+  region: process.env.NEXT_PUBLIC_REGION ?? "Kerala",
+
+  country: process.env.NEXT_PUBLIC_COUNTRY ?? "India",
   address,
 
   // TODO: confirm real operating hours before publishing.
@@ -172,4 +195,23 @@ export function seoServiceArea(): string {
     siteConfig.serviceAreas[0] ||
     "India & for NRI Families"
   );
+}
+
+/**
+ * Human phrase naming every service area plus the region, e.g.
+ * "Malappuram & Kozhikode, Kerala". Used in metadata descriptions and on-page
+ * copy so the location keywords people search for actually appear in the HTML.
+ * Returns an empty string when no area is configured, so callers can omit the
+ * surrounding sentence rather than render a dangling "in ".
+ */
+export function seoLocationPhrase(): string {
+  const areas = siteConfig.serviceAreas;
+  if (areas.length === 0) return "";
+
+  const joined =
+    areas.length === 1
+      ? areas[0]
+      : `${areas.slice(0, -1).join(", ")} & ${areas[areas.length - 1]}`;
+
+  return siteConfig.region ? `${joined}, ${siteConfig.region}` : joined;
 }
