@@ -43,11 +43,13 @@ export function ContactSection() {
               </span>
               <span className="min-w-0">
                 <span className="block text-sm text-muted">Call us</span>
+                {/* Sans with tabular figures: the display serif uses old-style
+                    numerals, which makes a phone number hard to scan. */}
                 {phones.map((phone) => (
                   <a
                     key={phone.href}
                     href={phone.href}
-                    className="block font-serif text-xl font-semibold text-brown transition-colors hover:text-terracotta"
+                    className="mt-0.5 block font-sans text-lg font-semibold tabular-nums tracking-[0.01em] text-brown transition-colors hover:text-terracotta"
                   >
                     {phone.display}
                   </a>
