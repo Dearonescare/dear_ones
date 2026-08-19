@@ -80,6 +80,12 @@ export const siteConfig = {
   // Contact channels (public). Empty string => hidden in the UI.
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
   phone: process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "+91 88776 67959",
+  /**
+   * Second care-coordinator line. Shown alongside the primary number wherever
+   * the full contact details are listed; single tap-to-call affordances (the
+   * mobile bar, header button) stay on the primary number.
+   */
+  phoneAlt: process.env.NEXT_PUBLIC_PHONE_NUMBER_2 ?? "+91 88775 59050",
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "",
   /**
    * WhatsApp "click to chat" short link for the business account. Used as-is
@@ -154,6 +160,33 @@ export function getTelHref(): string | null {
   return siteConfig.phone ? `tel:${siteConfig.phone.replace(/\s+/g, "")}` : null;
 }
 
+export interface PhoneLink {
+  /** As written for humans, e.g. "+91 88776 67959". */
+  display: string;
+  /** Dialable href, e.g. "tel:+918877667959". */
+  href: string;
+}
+
+/**
+ * Every configured phone number, in display order. Used where the full contact
+ * details are listed so both care-coordinator lines are reachable; duplicates
+ * and blanks are dropped so an env override cannot list the same number twice.
+ */
+export function getPhoneLinks(): PhoneLink[] {
+  const seen = new Set<string>();
+
+  return [siteConfig.phone, siteConfig.phoneAlt]
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .reduce<PhoneLink[]>((acc, display) => {
+      const href = `tel:${display.replace(/\s+/g, "")}`;
+      if (seen.has(href)) return acc;
+      seen.add(href);
+      acc.push({ display, href });
+      return acc;
+    }, []);
+}
+
 export function getWhatsappHref(prefilled?: string): string | null {
   // A configured short link wins; it already points at the right account and
   // does not support a prefilled message.
@@ -174,6 +207,7 @@ export function getMailtoHref(subject?: string): string | null {
 export function hasAnyContactChannel(): boolean {
   return Boolean(
     siteConfig.phone ||
+      siteConfig.phoneAlt ||
       siteConfig.whatsapp ||
       siteConfig.whatsappLink ||
       siteConfig.email

@@ -1,5 +1,10 @@
 import type { SiteAddress } from "@/config/site";
-import { siteConfig, toDigits, seoLocationPhrase } from "@/config/site";
+import {
+  siteConfig,
+  toDigits,
+  seoLocationPhrase,
+  getPhoneLinks,
+} from "@/config/site";
 import { getFaqs } from "@/content/landing-page";
 
 /**
@@ -36,12 +41,17 @@ export function buildJsonLd(): Record<string, unknown> {
   const sameAs = Object.values(siteConfig.socialLinks).filter(Boolean);
   const logoUrl = `${url}/opengraph-image`;
 
+  // Every published care-coordinator line, normalised to E.164-ish digits.
+  const telephones = getPhoneLinks().map((p) => `+${toDigits(p.display)}`);
+
   const contactPoint =
-    siteConfig.phone || siteConfig.email
+    telephones.length || siteConfig.email
       ? {
           "@type": "ContactPoint",
           contactType: "customer support",
-          ...(siteConfig.phone ? { telephone: siteConfig.phone } : {}),
+          ...(telephones.length
+            ? { telephone: telephones.length === 1 ? telephones[0] : telephones }
+            : {}),
           ...(siteConfig.email ? { email: siteConfig.email } : {}),
           availableLanguage: siteConfig.availableLanguages,
         }
@@ -93,8 +103,8 @@ export function buildJsonLd(): Record<string, unknown> {
     logo: logoUrl,
     ...postalAddress,
     ...(siteConfig.email ? { email: siteConfig.email } : {}),
-    ...(siteConfig.phone
-      ? { telephone: `+${toDigits(siteConfig.phone)}` }
+    ...(telephones.length
+      ? { telephone: telephones.length === 1 ? telephones[0] : telephones }
       : {}),
     ...(areaServed.length ? { areaServed } : {}),
     knowsLanguage: siteConfig.availableLanguages,

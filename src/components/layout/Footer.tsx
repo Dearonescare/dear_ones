@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/BrandIcons";
 import {
   getMailtoHref,
-  getTelHref,
+  getPhoneLinks,
   getWhatsappHref,
   hasAnyContactChannel,
   serviceAreaLabel,
@@ -18,7 +18,7 @@ import { BrandMark } from "@/components/ui/BrandMark";
 
 export function Footer() {
   const year = new Date().getFullYear();
-  const tel = getTelHref();
+  const phones = getPhoneLinks();
   const wa = getWhatsappHref();
   const mail = getMailtoHref("Dear Ones enquiry");
 
@@ -81,17 +81,17 @@ export function Footer() {
               Get in touch
             </h2>
             <ul className="mt-5 space-y-3 text-[0.98rem] text-brown-soft">
-              {tel && (
-                <li>
+              {phones.map((phone) => (
+                <li key={phone.href}>
                   <a
-                    href={tel}
+                    href={phone.href}
                     className="inline-flex items-center gap-2.5 transition-colors hover:text-terracotta"
                   >
                     <Phone aria-hidden="true" className="h-4 w-4 text-gold-dark" />
-                    {siteConfig.phone}
+                    {phone.display}
                   </a>
                 </li>
-              )}
+              ))}
               {wa && (
                 <li>
                   <a

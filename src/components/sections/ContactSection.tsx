@@ -1,7 +1,7 @@
 import { Mail, Phone } from "lucide-react";
 import {
   getMailtoHref,
-  getTelHref,
+  getPhoneLinks,
   getWhatsappHref,
   serviceAreaLabel,
   siteConfig,
@@ -12,7 +12,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { WhatsappIcon } from "@/components/ui/BrandIcons";
 
 export function ContactSection() {
-  const tel = getTelHref();
+  const phones = getPhoneLinks();
   const wa = getWhatsappHref();
   const mail = getMailtoHref("Dear Ones enquiry");
 
@@ -34,24 +34,29 @@ export function ContactSection() {
           delay={100}
           className="mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-2"
         >
-          {tel && (
-            <a
-              href={tel}
-              className="group flex items-center gap-4 rounded-3xl border border-line bg-surface px-6 py-6 shadow-[0_10px_30px_rgba(76,37,13,0.06)] transition-colors hover:border-terracotta"
-            >
+          {phones.length > 0 && (
+            /* Each number is its own link, so the card is a container rather
+               than a single anchor. */
+            <div className="flex items-center gap-4 rounded-3xl border border-line bg-surface px-6 py-6 shadow-[0_10px_30px_rgba(76,37,13,0.06)] transition-colors hover:border-terracotta">
               <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-terracotta text-[#fff7ee] shadow-[0_8px_20px_rgba(138,61,37,0.24)]">
                 <Phone aria-hidden="true" className="h-6 w-6" />
               </span>
               <span className="min-w-0">
                 <span className="block text-sm text-muted">Call us</span>
-                <span className="block font-serif text-xl font-semibold text-brown">
-                  {siteConfig.phone}
-                </span>
+                {phones.map((phone) => (
+                  <a
+                    key={phone.href}
+                    href={phone.href}
+                    className="block font-serif text-xl font-semibold text-brown transition-colors hover:text-terracotta"
+                  >
+                    {phone.display}
+                  </a>
+                ))}
                 <span className="mt-0.5 block text-xs text-muted">
-                  Tap to call a care coordinator
+                  Tap a number to call a care coordinator
                 </span>
               </span>
-            </a>
+            </div>
           )}
 
           {wa && (
