@@ -16,7 +16,7 @@
  * the SEO templates always carry a location, exactly as the phone number and
  * social links already do; the env var still overrides it.
  */
-const DEFAULT_SERVICE_AREAS = "Malappuram, Kozhikode";
+const DEFAULT_SERVICE_AREAS = "Malappuram, Kozhikode, Thrissur";
 
 const rawServiceAreas =
   process.env.NEXT_PUBLIC_SERVICE_AREAS ?? DEFAULT_SERVICE_AREAS;
@@ -239,13 +239,21 @@ export function seoServiceArea(): string {
  * surrounding sentence rather than render a dangling "in ".
  */
 export function seoLocationPhrase(): string {
-  const areas = siteConfig.serviceAreas;
-  if (areas.length === 0) return "";
-
-  const joined =
-    areas.length === 1
-      ? areas[0]
-      : `${areas.slice(0, -1).join(", ")} & ${areas[areas.length - 1]}`;
+  const joined = serviceAreasPhrase();
+  if (!joined) return "";
 
   return siteConfig.region ? `${joined}, ${siteConfig.region}` : joined;
+}
+
+/**
+ * The service areas alone, joined for prose: "Malappuram, Kozhikode &
+ * Thrissur". Separate from seoLocationPhrase() because on-page labels read
+ * better without the region appended.
+ */
+export function serviceAreasPhrase(): string {
+  const areas = siteConfig.serviceAreas;
+  if (areas.length === 0) return "";
+  if (areas.length === 1) return areas[0];
+
+  return `${areas.slice(0, -1).join(", ")} & ${areas[areas.length - 1]}`;
 }

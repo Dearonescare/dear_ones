@@ -26,7 +26,11 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
-import { serviceAreaLabel, siteConfig } from "@/config/site";
+import {
+  serviceAreaLabel,
+  serviceAreasPhrase,
+  siteConfig,
+} from "@/config/site";
 import type {
   FaqItem,
   HeroHighlight,
@@ -59,7 +63,7 @@ export const hero = {
   // The eyebrow sits directly above the h1 and is the first text on the page,
   // so it carries the service + location keywords that local searches use.
   eyebrow: siteConfig.serviceAreas.length
-    ? `NRI Parent Care · ${siteConfig.serviceAreas.join(" & ")}`
+    ? `NRI Parent Care · ${serviceAreasPhrase()}`
     : "NRI Parent Care & Elder Support",
   titleLines: ["Trusted care and support for your parents."],
   /** Rendered as the closing headline line in gold. */
