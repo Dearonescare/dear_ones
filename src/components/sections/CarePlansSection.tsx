@@ -528,8 +528,9 @@ export function CarePlansSection() {
           {activePlan.description}
         </p>
 
-        {/* The artwork has a transparent surround, so the tinted box behind it
-            is what gives each plan its own colour. */}
+        {/* Each tier shows its own illustration, filling the frame so no
+            mismatched edge appears between the artwork and the tinted box.
+            The tint still covers the loading state. */}
         <div
           className={`relative mt-5 h-36 overflow-hidden rounded-[18px] ${theme.imageBox}`}
         >
@@ -538,7 +539,7 @@ export function CarePlansSection() {
             src={activePlan.image.src}
             alt={activePlan.image.alt}
             fill
-            className="object-contain object-center"
+            className="object-cover object-center"
             sizes="212px"
           />
         </div>
