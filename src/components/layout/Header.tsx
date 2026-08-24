@@ -47,7 +47,7 @@ export function Header() {
               src="/images/brand-lockup.png"
               alt={`${siteConfig.name} — ${siteConfig.tagline}`}
               width={600}
-              height={165}
+              height={155}
               priority
               sizes="(min-width: 640px) 200px, 168px"
               className="h-[46px] w-auto sm:h-[54px]"
