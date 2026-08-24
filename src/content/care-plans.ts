@@ -146,7 +146,7 @@ export const carePlanDetails: Record<CarePlanId, CarePlanDetail> = {
     description:
       "Regular visits and monitoring to make sure your parents are safe, comfortable and well supported.",
     image: {
-      src: "/images/plan-visit-monitor.webp",
+      src: "/images/plan-essential-green.webp",
       alt: "Care professional checking an elderly woman’s blood pressure during a home visit",
     },
     note: "Caring visits. Peace of mind.",
@@ -177,7 +177,7 @@ export const carePlanDetails: Record<CarePlanId, CarePlanDetail> = {
     description:
       "Everything in Essential, plus extra support when they need it most.",
     image: {
-      src: "/images/plan-visit-assist.webp",
+      src: "/images/plan-plus-blue.webp",
       alt: "Care professional walking with an elderly man outside a hospital",
     },
     note: "We combine regular visits, health monitoring and day-to-day assistance — so your parents stay supported and secure.",
@@ -225,7 +225,7 @@ export const carePlanDetails: Record<CarePlanId, CarePlanDetail> = {
     description:
       "Complete care, companionship and management — so your loved ones live with dignity and comfort.",
     image: {
-      src: "/images/plan-companion-manage.webp",
+      src: "/images/plan-elite-gold.webp",
       alt: "Care coordinator with an elderly couple sharing a video call with family",
     },
     note: "We don’t just provide services, we become your family’s extended support system.",
