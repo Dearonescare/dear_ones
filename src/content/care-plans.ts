@@ -145,6 +145,11 @@ export const carePlanDetails: Record<CarePlanId, CarePlanDetail> = {
     title: "Dear Care Essential",
     description:
       "Regular visits and monitoring to make sure your parents are safe, comfortable and well supported.",
+    // TODO: replace with artwork specific to Essential.
+    image: {
+      src: "/images/plan-essential.webp",
+      alt: "Care professional walking with an elderly parent",
+    },
     note: "Caring visits. Peace of mind.",
     membership: {
       title: "Your Membership Includes",
@@ -172,6 +177,11 @@ export const carePlanDetails: Record<CarePlanId, CarePlanDetail> = {
     title: "Dear Care Plus",
     description:
       "Everything in Essential, plus extra support when they need it most.",
+    // TODO: replace with artwork specific to Plus.
+    image: {
+      src: "/images/plan-plus.webp",
+      alt: "Care professional supporting an elderly parent on a walk",
+    },
     note: "We combine regular visits, health monitoring and day-to-day assistance — so your parents stay supported and secure.",
     membership: {
       title: "Your Membership Includes",
@@ -216,6 +226,11 @@ export const carePlanDetails: Record<CarePlanId, CarePlanDetail> = {
     title: "Dear Care Elite",
     description:
       "Complete care, companionship and management — so your loved ones live with dignity and comfort.",
+    // TODO: replace with artwork specific to Elite.
+    image: {
+      src: "/images/plan-elite.webp",
+      alt: "Care professional accompanying an elderly parent",
+    },
     note: "We don’t just provide services, we become your family’s extended support system.",
     membership: {
       title: "Your Membership Includes",

@@ -156,6 +156,7 @@ interface PlanTheme {
   panel: string;
   summaryDivider: string;
   summaryTitle: string;
+  imageBox: string;
   noteBox: string;
   noteIcon: string;
   noteText: string;
@@ -184,6 +185,7 @@ const planThemes: Record<CarePlanId, PlanTheme> = {
     panel: "border-[#dde7da] bg-[#fbfdfa]",
     summaryDivider: "border-[#e0e6dd]",
     summaryTitle: "text-[#2f6b3d]",
+    imageBox: "bg-[#eef6ea]",
     noteBox: "bg-[#eef6ea]",
     noteIcon: "text-[#3d7a4a]",
     noteText: "text-[#3a6b44]",
@@ -209,6 +211,7 @@ const planThemes: Record<CarePlanId, PlanTheme> = {
     panel: "border-[#dde5ed] bg-[#fbfcfe]",
     summaryDivider: "border-[#dfe4e8]",
     summaryTitle: "text-[#1c5f9e]",
+    imageBox: "bg-[#edf3fb]",
     noteBox: "bg-[#edf3fb]",
     noteIcon: "text-[#2b6098]",
     noteText: "text-[#2f5f8c]",
@@ -234,6 +237,7 @@ const planThemes: Record<CarePlanId, PlanTheme> = {
     panel: "border-[#ece1cd] bg-[#fffdf8]",
     summaryDivider: "border-[#eae2d3]",
     summaryTitle: "text-[#a06f14]",
+    imageBox: "bg-[#fdf5e6]",
     noteBox: "bg-[#fdf5e6]",
     noteIcon: "text-[#b47c18]",
     noteText: "text-[#8a6220]",
@@ -524,10 +528,15 @@ export function CarePlansSection() {
           {activePlan.description}
         </p>
 
-        <div className="relative mt-5 h-36 overflow-hidden rounded-[18px] bg-white">
+        {/* The artwork has a transparent surround, so the tinted box behind it
+            is what gives each plan its own colour. */}
+        <div
+          className={`relative mt-5 h-36 overflow-hidden rounded-[18px] ${theme.imageBox}`}
+        >
           <Image
-            src="/images/plan_img.png"
-            alt="Care professional walking with an elderly parent"
+            key={activePlan.image.src}
+            src={activePlan.image.src}
+            alt={activePlan.image.alt}
             fill
             className="object-contain object-center"
             sizes="212px"

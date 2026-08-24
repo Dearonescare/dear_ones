@@ -76,10 +76,18 @@ export interface CarePlanSection {
   groups: CarePlanBenefitGroup[];
 }
 
+/** Illustration shown in a care plan's summary column. */
+export interface CarePlanImage {
+  src: string;
+  alt: string;
+}
+
 export interface CarePlanDetail {
   /** Panel title, e.g. "Dear Care Plus". */
   title: string;
   description: string;
+  /** Illustration for this plan, so each tier can show its own artwork. */
+  image: CarePlanImage;
   /** Closing reassurance shown under the illustration. */
   note: string;
   membership: CarePlanSection;
