@@ -62,6 +62,12 @@
     scroll-behavior: smooth;
     scroll-padding-top: var(--header-offset);
     -webkit-text-size-adjust: 100%;
+    /* Always reserve the scrollbar's width. Both the brand curtain (Lenis
+       applies `overflow: clip` while scrolling is locked) and the mobile
+       navigation hide the scrollbar; without a reserved gutter the page
+       widens by ~15px the moment it disappears and snaps back when it
+       returns, which reads as the animation jumping sideways. */
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -306,6 +312,12 @@
 .motion-ready [data-hero="benefit"],
 .motion-ready [data-hero="heart"] {
   opacity: 0;
+}
+
+/* The brand curtain only exists for visitors who are getting the animation.
+   Tailwind's `hidden` holds it out of the document otherwise. */
+.motion-ready [data-preloader] {
+  display: grid;
 }
 
 /* The headline opens out from small rather than travelling in. The origin is

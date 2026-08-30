@@ -10,6 +10,16 @@ import { EASE, MEDIA, SCRUB, TRAVEL, PARALLAX } from "./motion";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
+ * Module scope, so it survives a remount but resets on a real page load.
+ *
+ * React Strict Mode double-invokes effects in development: the curtain would
+ * be shown, torn down by the cleanup, then shown again — a visible blink. The
+ * intro is a once-per-load event, so it is guarded rather than made
+ * re-entrant.
+ */
+let introPlayed = false;
+
+/**
  * The page's single scroll choreography.
  *
  * Mounted once in the root layout. It owns smooth scrolling (Lenis) and every
@@ -74,21 +84,93 @@ export function MotionProvider() {
         '[data-hero="rule-right"]'
       );
 
-      if (media || headline) {
+      const curtain = document.querySelector<HTMLElement>("[data-preloader]");
+      const curtainLogo = document.querySelector<HTMLElement>(
+        "[data-preloader-logo]"
+      );
+
+      // How far the hero is pushed back to let the curtain play.
+      //
+      // This MUST land before the curtain finishes clearing (it starts fading
+      // at 0.5 and takes 0.4s). Any later and there is a gap where the curtain
+      // has gone but the hero has not started, so the visitor sees a blank
+      // cream screen — which reads as the preloader blinking.
+      const H = curtain ? 0.62 : 0;
+
+      // The curtain is in the root layout, so it also renders on /privacy and
+      // /terms where there is no hero. It has to be in this condition or those
+      // pages would show a curtain with nothing to lift it.
+      // On a remount the curtain must not reappear over content the visitor is
+      // already looking at, so make sure it is out of the way first.
+      if (introPlayed && curtain) {
+        gsap.set(curtain, { display: "none", autoAlpha: 0 });
+      }
+
+      if (media || headline || curtain) {
         const intro = gsap.timeline({
           defaults: { ease: EASE },
           // Clear the pre-paint guard once the sequence owns the elements.
-          onStart: () =>
-            document.documentElement.classList.remove("motion-ready"),
+          onStart: () => {
+            introPlayed = true;
+            document.documentElement.classList.remove("motion-ready");
+          },
           onComplete: () => {
             // Drop inline transforms so nothing here creates a containing
             // block for the fixed header or the scroll parallax below.
-            gsap.set([badge, desc, heart, ruleL, ruleR], {
-              clearProps: "all",
-            });
-            gsap.set([headline, ...ctas, ...benefits], { clearProps: "all" });
+            const settled = [
+              badge,
+              desc,
+              heart,
+              ruleL,
+              ruleR,
+              headline,
+              ...ctas,
+              ...benefits,
+            ].filter(Boolean);
+
+            if (settled.length) gsap.set(settled, { clearProps: "all" });
           },
         });
+
+        /* ---------- Brand curtain ----------
+           Held inline rather than by the `.motion-ready` class, so removing
+           that class mid-sequence cannot pull the curtain out from under the
+           animation. Scrolling is locked until it lifts.
+
+           Skipped entirely on a remount: replaying it would show the curtain a
+           second time over a page the visitor is already reading. */
+        if (curtain && curtainLogo && !introPlayed) {
+          gsap.set(curtain, { display: "grid", autoAlpha: 1 });
+          lenis.stop();
+
+          intro
+            .fromTo(
+              curtainLogo,
+              { autoAlpha: 0, scale: 0.94 },
+              { autoAlpha: 1, scale: 1, duration: 0.45, ease: "power2.out" },
+              0
+            )
+            // The mark keeps growing very slightly as the curtain clears, so
+            // the two feel like one movement instead of a fade after a pause.
+            .to(
+              curtainLogo,
+              { scale: 1.04, duration: 0.45, ease: "power2.inOut" },
+              0.5
+            )
+            .to(
+              curtain,
+              {
+                autoAlpha: 0,
+                duration: 0.4,
+                ease: "power2.inOut",
+                onComplete: () => {
+                  gsap.set(curtain, { display: "none" });
+                  lenis.start();
+                },
+              },
+              0.5
+            );
+        }
 
         // The photograph unmasks from the right and settles out of its zoom.
         if (media) {
@@ -107,7 +189,7 @@ export function MotionProvider() {
               duration: isMobileNow ? 1.35 : 1.6,
               ease: "power4.out",
             },
-            0.05
+            H + 0.05
           );
         }
 
@@ -116,14 +198,10 @@ export function MotionProvider() {
             badge,
             { opacity: 0, y: 18, x: -15 },
             { opacity: 1, y: 0, x: 0, duration: 0.6 },
-            0.15
+            H + 0.15
           );
         }
 
-        // The headline is the left-hand counterpart of the photograph: same
-        // duration, same easing, same start, mirrored direction. Running them
-        // together is what makes the two sides of the hero feel like one
-        // movement rather than two animations that happen to overlap.
         // The headline blooms open from small. `back.out` overshoots slightly
         // past full size before settling, which is what gives it the sense of
         // opening rather than merely growing — kept low so it reads as a flower
@@ -138,7 +216,7 @@ export function MotionProvider() {
               duration: isMobileNow ? 1.05 : 1.2,
               ease: "back.out(1.3)",
             },
-            0.05
+            H + 0.05
           );
         }
 
@@ -149,19 +227,19 @@ export function MotionProvider() {
               ruleL,
               { scaleX: 0 },
               { scaleX: 1, duration: 0.55 },
-              0.95
+              H + 0.95
             )
             .fromTo(
               heart,
               { opacity: 0, scale: 0.6 },
               { opacity: 1, scale: 1, duration: 0.5 },
-              1.03
+              H + 1.03
             )
             .fromTo(
               ruleR,
               { scaleX: 0 },
               { scaleX: 1, duration: 0.55 },
-              1.11
+              H + 1.11
             );
         }
 
@@ -170,7 +248,7 @@ export function MotionProvider() {
             desc,
             { opacity: 0, y: 22 },
             { opacity: 1, y: 0, duration: 0.8 },
-            1.14
+            H + 1.14
           );
         }
 
@@ -179,7 +257,7 @@ export function MotionProvider() {
             ctas,
             { opacity: 0, y: 20, scale: 0.98 },
             { opacity: 1, y: 0, scale: 1, duration: 0.65, stagger: 0.1 },
-            1.34
+            H + 1.34
           );
         }
 
@@ -188,7 +266,7 @@ export function MotionProvider() {
             benefits,
             { opacity: 0, y: 15 },
             { opacity: 1, y: 0, duration: 0.6, stagger: 0.085 },
-            1.6
+            H + 1.6
           );
         }
       }

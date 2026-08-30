@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileContactBar } from "@/components/layout/MobileContactBar";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { MotionProvider } from "@/components/animation/MotionProvider";
+import { Preloader } from "@/components/animation/Preloader";
 
 const serif = Cormorant_Garamond({
   subsets: ["latin"],
@@ -129,6 +130,7 @@ export default function RootLayout({
               "try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){var d=document.documentElement;d.classList.add('motion-ready');setTimeout(function(){d.classList.remove('motion-ready')},2500)}}catch(e){}",
           }}
         />
+        <Preloader />
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
