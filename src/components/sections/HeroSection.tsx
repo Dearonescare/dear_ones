@@ -16,12 +16,17 @@ export function HeroSection() {
   return (
     <section
       id="top"
+      data-anim="hero"
       className="relative isolate flex min-h-[100svh] items-start overflow-hidden pt-[72px] pb-14 md:items-center md:pb-20"
     >
       {/* Ambient warm background */}
+      {/* Decorative only, and the section clips overflow, so drifting this
+          layer cannot expose an edge the way moving a full-bleed image would. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-30"
+        data-anim="parallax"
+        data-anim-strength="1.4"
+        className="pointer-events-none absolute inset-0 -z-30 will-change-transform"
       >
         <div className="absolute -right-24 -top-24 h-[38rem] w-[38rem] rounded-full bg-[radial-gradient(circle,_rgba(238,222,201,0.85),_transparent_65%)]" />
         <div className="absolute -left-32 top-40 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,_rgba(250,240,226,0.9),_transparent_60%)]" />
@@ -31,9 +36,13 @@ export function HeroSection() {
           composed for their own orientation (engraved village on one side,
           photo on the other), so they are used whole; a plain <picture>
           keeps the browser from fetching the one it doesn't need. */}
+      {/* The CSS entrance is gone: the scroll choreography now owns this
+          element's reveal so it can be sequenced with the copy. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 top-[72px] -z-20 animate-hero-image"
+        data-anim="hero-media"
+        data-hero="media"
+        className="pointer-events-none absolute inset-x-0 bottom-0 top-[72px] -z-20 will-change-transform"
       >
         <picture>
           <source
@@ -67,16 +76,25 @@ export function HeroSection() {
       />
 
       <Container>
-        <div className="flex max-w-xl flex-col lg:max-w-[31rem]">
+        <div
+          data-hero="copy"
+          className="flex max-w-xl flex-col lg:max-w-[31rem]"
+        >
           {/* Eyebrow pill */}
-          <p className="eyebrow eyebrow-pill inline-flex w-fit items-center gap-2 rounded-full border border-gold/35 bg-surface/70 px-3.5 py-1.5 shadow-[0_2px_10px_rgba(76,37,13,0.05)] backdrop-blur-[2px] animate-fade-up">
+          <p
+            data-hero="badge"
+            className="eyebrow eyebrow-pill inline-flex w-fit items-center gap-2 rounded-full border border-gold/35 bg-surface/70 px-3.5 py-1.5 shadow-[0_2px_10px_rgba(76,37,13,0.05)] backdrop-blur-[2px]"
+          >
             <ShieldCheck aria-hidden="true" className="h-[1.15em] w-[1.15em]" />
             {hero.eyebrow}
           </p>
 
+          {/* Animated as one block, mirroring the photograph on the right, so
+              the two halves of the hero arrive together. Markup is the
+              original: only the hook attribute is added. */}
           <h1
-            className="mt-5 text-balance text-[2.05rem] leading-[1.08] text-brown animate-fade-up sm:text-[2.6rem] lg:text-[3rem]"
-            style={{ animationDelay: "60ms" }}
+            data-hero="headline"
+            className="mt-5 text-balance text-[2.05rem] leading-[1.08] text-brown sm:text-[2.6rem] lg:text-[3rem]"
           >
             {hero.titleLines.map((line) => (
               <span key={line} className="block">
@@ -89,30 +107,36 @@ export function HeroSection() {
           {/* Heart divider */}
           <div
             aria-hidden="true"
-            className="mt-4 flex max-w-[21rem] items-center gap-3 animate-fade-up"
-            style={{ animationDelay: "90ms" }}
+            className="mt-4 flex max-w-[21rem] items-center gap-3"
           >
-            <span className="h-px flex-1 bg-[linear-gradient(to_right,transparent,var(--gold))]" />
-            <Heart className="h-3.5 w-3.5 shrink-0 fill-gold-dark text-gold-dark" />
-            <span className="h-px flex-1 bg-[linear-gradient(to_left,transparent,var(--gold))]" />
+            <span
+              data-hero="rule-left"
+              className="h-px flex-1 origin-right bg-[linear-gradient(to_right,transparent,var(--gold))]"
+            />
+            <Heart
+              data-hero="heart"
+              className="h-3.5 w-3.5 shrink-0 fill-gold-dark text-gold-dark"
+            />
+            <span
+              data-hero="rule-right"
+              className="h-px flex-1 origin-left bg-[linear-gradient(to_left,transparent,var(--gold))]"
+            />
           </div>
 
           <p
-            className="mt-4 max-w-[27.5rem] text-pretty text-[0.85rem] leading-relaxed text-muted animate-fade-up md:text-[0.8rem]"
-            style={{ animationDelay: "120ms" }}
+            data-hero="desc"
+            className="mt-4 max-w-[27.5rem] text-pretty text-[0.85rem] leading-relaxed text-muted md:text-[0.8rem]"
           >
             {hero.description}
           </p>
 
           {/* Highlights — stacked list on phones, divided row from md up.
               Sits above the CTAs on mobile and below them on desktop. */}
-          <ul
-            className="order-1 mt-7 divide-y divide-line/70 animate-fade-up md:order-2 md:mt-6 md:flex md:divide-x md:divide-y-0"
-            style={{ animationDelay: "240ms" }}
-          >
+          <ul className="order-1 mt-7 divide-y divide-line/70 md:order-2 md:mt-6 md:flex md:divide-x md:divide-y-0">
             {hero.highlights.map(({ label, icon: Icon }) => (
               <li
                 key={label}
+                data-hero="benefit"
                 className="flex items-center gap-3 py-3 md:flex-1 md:flex-col md:gap-2 md:px-3 md:py-0 md:text-center"
               >
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-gold/30 bg-surface/70 md:h-auto md:w-auto md:border-0 md:bg-transparent">
@@ -129,8 +153,8 @@ export function HeroSection() {
           </ul>
 
           <div
-            className="order-2 mt-7 flex flex-col gap-3 animate-fade-up sm:flex-row sm:items-center md:order-1 md:mt-7"
-            style={{ animationDelay: "180ms" }}
+            data-hero="ctas"
+            className="order-2 mt-7 flex flex-col gap-3 sm:flex-row sm:items-center md:order-1 md:mt-7"
           >
             <Button
               href="#contact"

@@ -80,7 +80,11 @@ export function FamilyUpdatesSection() {
     >
       <Container className="grid items-center gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
         <Reveal className="order-2 lg:order-1">
-          <ReportMock />
+          {/* The report mock is this page's product visual, so it is the one
+              element that settles into place as the section reaches centre. */}
+          <div data-anim="feature" className="will-change-transform">
+            <ReportMock />
+          </div>
         </Reveal>
 
         <Reveal delay={100} className="order-1 max-w-xl lg:order-2">

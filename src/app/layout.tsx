@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileContactBar } from "@/components/layout/MobileContactBar";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { MotionProvider } from "@/components/animation/MotionProvider";
 
 const serif = Cormorant_Garamond({
   subsets: ["latin"],
@@ -108,8 +109,26 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable}`}>
+    /* The inline script below adds `motion-ready` to this element before React
+       hydrates, so its className legitimately differs from the server HTML.
+       Suppression applies to this element's own attributes only — it does not
+       hide mismatches anywhere else in the tree. */
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${serif.variable} ${sans.variable}`}
+    >
       <body className="flex min-h-full flex-col pb-[72px] lg:pb-0">
+        {/* Marks the document as animating before first paint, so the hero's
+            starting state applies without a flash of the finished layout.
+            Skipped under reduced motion, and self-clearing after 2.5s so a
+            failed hydration can never leave the hero invisible. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){var d=document.documentElement;d.classList.add('motion-ready');setTimeout(function(){d.classList.remove('motion-ready')},2500)}}catch(e){}",
+          }}
+        />
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
@@ -119,6 +138,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <MobileContactBar />
+        <MotionProvider />
         <GoogleAnalytics />
       </body>
     </html>

@@ -42,9 +42,15 @@ export function SectionHeading({
           titleClassName
         )}
       >
+        {/* Each line gets a clipping wrapper so the scroll choreography can
+            slide it up from below its own baseline. Without JS, or with
+            reduced motion, the inner span simply sits at rest and the
+            heading renders exactly as before. */}
         {lines.map((line, i) => (
-          <span key={i} className="block">
-            {line}
+          <span key={i} className="anim-mask block" data-anim="mask">
+            <span className="block" data-anim-inner="">
+              {line}
+            </span>
           </span>
         ))}
       </Heading>

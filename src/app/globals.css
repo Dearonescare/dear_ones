@@ -275,6 +275,71 @@
   .animate-hero-image {
     animation: none;
   }
+
+  /* The choreography never starts under reduced motion, so the masked
+     heading lines must sit at rest and stay visible. */
+  .anim-mask {
+    overflow: visible;
+  }
+}
+
+/* ---------- Scroll choreography ---------- */
+
+/* Clipping wrapper for a masked heading line. The padding/margin pair keeps
+   descenders (g, y, p) from being shaved off by the overflow clip, which a
+   plain `overflow: hidden` on a text line would otherwise do. */
+.anim-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+/* Hero intro starting state.
+   Gated on `.motion-ready`, which an inline script adds before first paint and
+   only when motion is allowed. Without JS, or under reduced motion, the class
+   is never added and the hero renders at rest — so the content can never be
+   left invisible by a script that failed to run. */
+.motion-ready [data-hero="badge"],
+.motion-ready [data-hero="desc"],
+.motion-ready [data-hero="ctas"] > *,
+.motion-ready [data-hero="benefit"],
+.motion-ready [data-hero="heart"] {
+  opacity: 0;
+}
+
+/* The headline opens out from small rather than travelling in. The origin is
+   the left edge, not the centre, so the text grows in place instead of sliding
+   sideways as it scales — a centre origin would drift the whole block right. */
+.motion-ready [data-hero="headline"] {
+  opacity: 0;
+  transform: scale(0.86);
+  transform-origin: left center;
+}
+
+.motion-ready [data-hero="rule-left"],
+.motion-ready [data-hero="rule-right"] {
+  transform: scaleX(0);
+}
+
+.motion-ready [data-hero="media"] {
+  opacity: 0;
+}
+
+/* Lenis drives scrolling from JS; these are its documented base styles.
+   `html.lenis` is only added once the provider initialises, so a
+   reduced-motion or no-JS visitor keeps entirely native scrolling. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
 
 /* Hide native number input spinners for a cleaner form */
